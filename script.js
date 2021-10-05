@@ -5,7 +5,7 @@ var config = {
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 300 },
+            gravity: { y: 0 },
             debug: false
         }
     },
@@ -21,7 +21,7 @@ var stars;
 var bombs;
 var platforms;
 var cursors;
-var score = 0;
+var score = 20;
 var gameOver = false;
 var scoreText;
 
@@ -57,7 +57,6 @@ function create ()
     player = this.physics.add.sprite(100, 450, 'dude');
 
     //  Player physics properties. Give the little guy a slight bounce.
-    player.setBounce(0.2);
     player.setCollideWorldBounds(true);
 
     //  Our player animations, turning, walking left and walking right.
@@ -124,25 +123,32 @@ function update ()
     if (cursors.left.isDown)
     {
         player.setVelocityX(-160);
+        player.setVelocityY(0);
 
         player.anims.play('left', true);
     }
     else if (cursors.right.isDown)
     {
         player.setVelocityX(160);
+        player.setVelocityY(0);
 
         player.anims.play('right', true);
     }
+    else if (cursors.up.isDown)
+    {
+        player.setVelocityX(0);        
+        player.setVelocityY(-160);
+        player.anims.play('up', true);
+    }
+    else if (cursors.down.isDown) {
+        player.setVelocityX(0);        
+        player.setVelocityY(160);
+        player.anims.play('down', true);
+    }
     else
     {
-        player.setVelocityX(0);
 
         player.anims.play('turn');
-    }
-
-    if (cursors.up.isDown && player.body.touching.down)
-    {
-        player.setVelocityY(-330);
     }
 }
 
