@@ -63,13 +63,13 @@ function create ()
 
     // The player and its settings
     player = this.physics.add.sprite(100, 450, 'dude');
-    pinkGhost = this.physics.add.sprite(100, 450, 'pink-ghost');
+    pinkGhost = this.physics.add.sprite(150, 450, 'pink-ghost');
     pinkGhost.setScale(0.2);
-    redGhost = this.physics.add.sprite(120, 450, 'red-ghost');
-    redGhost.setScale(0.2);
-    blueGhost = this.physics.add.sprite(150, 450, 'blue-ghost');
+    redGhost = this.physics.add.sprite(200, 550, 'red-ghost');
+    redGhost.setScale(0.05);
+    blueGhost = this.physics.add.sprite(300, 350, 'blue-ghost');
     blueGhost.setScale(0.2);
-    yellowGhost = this.physics.add.sprite(200, 450, 'yellow-ghost');
+    yellowGhost = this.physics.add.sprite(400, 250, 'yellow-ghost');
     yellowGhost.setScale(0.2);
 
     //  Player physics properties. Give the little guy a slight bounce.
