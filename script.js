@@ -24,6 +24,10 @@ var cursors;
 var score = 20;
 var gameOver = false;
 var scoreText;
+var pinkGhost;
+var redGhost;
+var blueGhost;
+var yellowGhost;
 
 var game = new Phaser.Game(config);
 
@@ -34,6 +38,10 @@ function preload ()
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
+    this.load.image('pink-ghost', 'assets/pink-ghost.png', { width: 5, height: 5 });
+    this.load.image('red-ghost', 'assets/red-ghost.png', { frameWidth: 32, frameHeight: 48 });
+    this.load.image('blue-ghost', 'assets/blue-ghost.png', { frameWidth: 32, frameHeight: 48 });
+    this.load.image('yellow-ghost', 'assets/yellow-ghost.png', { frameWidth: 32, frameHeight: 48 });
     this.load.spritesheet('pacman', 'assets/pacman.png', { frameWidth: 32, frameHeight: 32 });
 }
 
@@ -56,6 +64,14 @@ function create ()
 
     // The player and its settings
     player = this.physics.add.sprite(100, 450, 'pacman');
+    pinkGhost = this.physics.add.sprite(150, 450, 'pink-ghost');
+    pinkGhost.setScale(0.2);
+    redGhost = this.physics.add.sprite(200, 550, 'red-ghost');
+    redGhost.setScale(0.05);
+    blueGhost = this.physics.add.sprite(300, 350, 'blue-ghost');
+    blueGhost.setScale(0.2);
+    yellowGhost = this.physics.add.sprite(400, 250, 'yellow-ghost');
+    yellowGhost.setScale(0.2);
 
     //  Player physics properties. Give the little guy a slight bounce.
     player.setCollideWorldBounds(true);
