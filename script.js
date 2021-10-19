@@ -128,6 +128,10 @@ function create ()
     this.physics.add.overlap(player, stars, collectStar, null, this);
 
     this.physics.add.collider(player, bombs, hitBomb, null, this);
+    this.physics.add.collider(player, redGhost, hitBomb, null, this);
+    this.physics.add.collider(player, blueGhost, hitBomb, null, this);
+    this.physics.add.collider(player, yellowGhost, hitBomb, null, this);
+    this.physics.add.collider(player, pinkGhost, hitBomb, null, this);
 }
 
 function update ()
