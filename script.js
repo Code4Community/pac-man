@@ -90,7 +90,22 @@ function create ()
 
     //  DOTS
     //  The dots are 4 by 4, evenly spaced 20 pixels apart in the x or y direction
-    dots = createDots(this);
+    positionsArray = [
+        [100, 120],
+        [100, 140],
+        [100, 160],
+        [100, 180],
+
+        [120, 120],
+        [140, 120],
+        [160, 120],
+        [180, 120],
+
+        [180, 100],
+        [180, 80],
+
+    ];
+    dots = createDots(this,positionsArray);
 
 
     //  The score
@@ -154,12 +169,9 @@ function eatDot (player, dot)
 
     if (dots.countActive(true) === 0)
     {
-        //  A new batch of dots to collect
-        dots.children.iterate(function (child) {
-
-            child.enableBody(true, child.x, 0, true, true);
-
-        });
+        //  Create new batch of dots to collect
+        /*dots = createDots(this, positionsArray);
+        this.physics.add.overlap(player, dots, eatDot, null, this);*/
 
         var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
 
@@ -183,11 +195,13 @@ function hitBomb (player, bomb)
     gameOver = true;
 }
 
-function createDots (realThis) {
-    dots = realThis.physics.add.group({
-        key: 'dot',
-        repeat: 10,
-        setXY: { x: 2, y: 100, stepX: 20, stepY: 0 },
-    });
+function createDots (realThis, positions) {
+    let dots = realThis.physics.add.group();
+    
+    for(let i = 0; i<positions.length; i++) {
+        let newDot = realThis.physics.add.sprite(positions[i][0],positions[i][1], 'dot');
+        dots.add(newDot);
+    }
+    
     return dots;
 }
