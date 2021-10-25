@@ -19,6 +19,7 @@ var config = {
 var player;
 var dots;
 var bombs;
+var ghosts;
 var platforms;
 var cursors;
 var score = 0;
@@ -35,7 +36,11 @@ function preload ()
     this.load.image('bomb', 'assets/bomb.png');
     this.load.image('dot', 'assets/dot.png');
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
-
+    this.load.image('pink-ghost', 'assets/pink-ghost.png', { width: 5, height: 5 });
+    this.load.image('red-ghost', 'assets/red-ghost.png', { frameWidth: 32, frameHeight: 48 });
+    this.load.image('blue-ghost', 'assets/blue-ghost.png', { frameWidth: 32, frameHeight: 48 });
+    this.load.image('yellow-ghost', 'assets/yellow-ghost.png', { frameWidth: 32, frameHeight: 48 });
+    this.load.spritesheet('pacman', 'assets/pacman.png', { frameWidth: 32, frameHeight: 32 });
 }
 
 function create ()
@@ -57,7 +62,18 @@ function create ()
     platforms.create(750, 220, 'ground');
 
     // The player and its settings
-    player = this.physics.add.sprite(100, 450, 'dude');
+    player = this.physics.add.sprite(100, 450, 'pacman');
+
+    let pinkGhost = this.physics.add.sprite(150, 450, 'pink-ghost').setScale(0.2);
+    let redGhost = this.physics.add.sprite(200, 550, 'red-ghost').setScale(0.05);
+    let blueGhost = this.physics.add.sprite(300, 350, 'blue-ghost').setScale(0.2);
+    let yellowGhost = this.physics.add.sprite(400, 250, 'yellow-ghost').setScale(0.2);
+
+    ghosts = this.physics.add.group();
+    ghosts.add(pinkGhost);
+    ghosts.add(redGhost);
+    ghosts.add(blueGhost);
+    ghosts.add(yellowGhost);
 
 
     //  Player physics properties. Give the little guy a slight bounce.
@@ -66,20 +82,20 @@ function create ()
     //  Our player animations, turning, walking left and walking right.
     this.anims.create({
         key: 'left',
-        frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
+        frames: this.anims.generateFrameNumbers('pacman', { start: 0, end: 3 }),
         frameRate: 10,
         repeat: -1
     });
 
     this.anims.create({
         key: 'turn',
-        frames: [ { key: 'dude', frame: 4 } ],
+        frames: [ { key: 'pacman', frame: 1 } ],
         frameRate: 20
     });
 
     this.anims.create({
         key: 'right',
-        frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
+        frames: this.anims.generateFrameNumbers('pacman', { start: 0, end: 3}),
         frameRate: 10,
         repeat: -1
     });
@@ -119,6 +135,7 @@ function create ()
 
     //  Checks to see if the player overlaps with any of the dots, if he does call the eatDot function
     this.physics.add.overlap(player, dots, eatDot, null, this);
+    this.physics.add.collider(player, ghosts, hitBomb, null, this);
 }
 
 function update ()
