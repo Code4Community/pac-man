@@ -26,6 +26,10 @@ var score = 20;
 var gameOver = false;
 var scoreText;
 
+var map;
+var tileset;
+var worldLayer;
+
 var game = new Phaser.Game(config);
 
 function preload ()
@@ -40,24 +44,18 @@ function preload ()
     this.load.image('blue-ghost', 'assets/blue-ghost.png', { frameWidth: 32, frameHeight: 48 });
     this.load.image('yellow-ghost', 'assets/yellow-ghost.png', { frameWidth: 32, frameHeight: 48 });
     this.load.spritesheet('pacman', 'assets/pacman.png', { frameWidth: 32, frameHeight: 32 });
+
+    this.load.image('tiles', 'assets/tiles.png');
+    this.load.tilemapTiledJSON('map', 'assets/map.json');
 }
 
 function create ()
 {
-    //  A simple background for our game
-    this.add.image(400, 300, 'sky');
+    map = this.make.tilemap({ key: "map" });
+    tileset = map.addTilesetImage("blueTiles", 'tiles');
+    map.createStaticLayer("Tile Layer 1", tileset);
 
-    //  The platforms group contains the ground and the 2 ledges we can jump on
-    platforms = this.physics.add.staticGroup();
-
-    //  Here we create the ground.
-    //  Scale it to fit the width of the game (the original sprite is 400x32 in size)
-    platforms.create(400, 568, 'ground').setScale(2).refreshBody();
-
-    //  Now let's create some ledges
-    platforms.create(600, 400, 'ground');
-    platforms.create(50, 250, 'ground');
-    platforms.create(750, 220, 'ground');
+    
 
     // The player and its settings
     player = this.physics.add.sprite(100, 450, 'pacman');
