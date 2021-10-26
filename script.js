@@ -18,22 +18,19 @@ var config = {
 
 var player;
 var dots;
-var bombs;
 var ghosts;
 var platforms;
 var cursors;
 var score = 0;
 var gameOver = false;
 var scoreText;
+var positionsArray;
 
 var game = new Phaser.Game(config);
 
 function preload ()
 {
-    this.load.image('sky', 'assets/sky.png');
     this.load.image('ground', 'assets/platform.png');
-    this.load.image('star', 'assets/star.png');
-    this.load.image('bomb', 'assets/bomb.png');
     this.load.image('dot', 'assets/dot.png');
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
     this.load.image('pink-ghost', 'assets/pink-ghost.png', { width: 5, height: 5 });
@@ -102,7 +99,6 @@ function create ()
 
     //  Input Events
     cursors = this.input.keyboard.createCursorKeys();
-    bombs = this.physics.add.group();
 
     //  DOTS
     //  The dots are 4 by 4, evenly spaced 20 pixels apart in the x or y direction
@@ -127,15 +123,12 @@ function create ()
     //  The score
     scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
 
-    //  Collide the player and the bombs with the platforms
+    //  Collide the player with the platforms
     this.physics.add.collider(player, platforms);
-    this.physics.add.collider(bombs, platforms);
-
-    this.physics.add.collider(player, bombs, hitBomb, null, this);
 
     //  Checks to see if the player overlaps with any of the dots, if he does call the eatDot function
     this.physics.add.overlap(player, dots, eatDot, null, this);
-    this.physics.add.collider(player, ghosts, hitBomb, null, this);
+    this.physics.add.collider(player, ghosts, hitGhost, null, this);
 }
 
 function update ()
@@ -187,21 +180,15 @@ function eatDot (player, dot)
     if (dots.countActive(true) === 0)
     {
         //  Create new batch of dots to collect
-        /*dots = createDots(this, positionsArray);
-        this.physics.add.overlap(player, dots, eatDot, null, this);*/
+        dots = createDots(this, positionsArray);
+        this.physics.add.overlap(player, dots, eatDot, null, this);
 
         var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
-
-        var bomb = bombs.create(x, 16, 'bomb');
-        bomb.setBounce(1);
-        bomb.setCollideWorldBounds(true);
-        bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
-        bomb.allowGravity = false;
 
     }
 }
 
-function hitBomb (player, bomb)
+function hitGhost (player, ghost)
 {
     this.physics.pause();
 
