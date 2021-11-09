@@ -67,10 +67,6 @@ function create ()
     ghosts.add(blueGhost);
     ghosts.add(yellowGhost);
 
-
-    //  Player physics properties. Give the little guy a slight bounce.
-    player.setCollideWorldBounds(true);
-
     //  Our player animations, turning, walking left and walking right.
     this.anims.create({
         key: 'left',
@@ -161,6 +157,24 @@ function update ()
     else
     {
         player.anims.play('turn');
+    }
+
+    if(player.x > 440) {
+        player.disableBody(true, true);
+        player = this.physics.add.sprite(0, 232, 'pacman');
+
+        player.setVelocityX(160);
+        player.setVelocityY(0);
+
+        player.anims.play('right', true);
+    } else if (player.x < 0) {
+        player.disableBody(true, true);
+        player = this.physics.add.sprite(440, 232, 'pacman');
+
+        player.setVelocityX(-160);
+        player.setVelocityY(0);
+
+        player.anims.play('left', true);
     }
 }
 
