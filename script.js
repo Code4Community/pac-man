@@ -76,13 +76,21 @@ function create ()
     });
 
     this.anims.create({
-        key: 'turn',
-        frames: [ { key: 'pacman', frame: 1 } ],
-        frameRate: 20
+        key: 'right',
+        frames: this.anims.generateFrameNumbers('pacman', { start: 0, end: 3}),
+        frameRate: 10,
+        repeat: -1
     });
 
     this.anims.create({
-        key: 'right',
+        key: 'up',
+        frames: this.anims.generateFrameNumbers('pacman', { start: 0, end: 3}),
+        frameRate: 10,
+        repeat: -1
+    });
+
+    this.anims.create({
+        key: 'down',
         frames: this.anims.generateFrameNumbers('pacman', { start: 0, end: 3}),
         frameRate: 10,
         repeat: -1
@@ -133,14 +141,12 @@ function update ()
     {
         player.setVelocityX(-160);
         player.setVelocityY(0);
-
         player.anims.play('left', true);
     }
     else if (cursors.right.isDown)
     {
         player.setVelocityX(160);
         player.setVelocityY(0);
-
         player.anims.play('right', true);
     }
     else if (cursors.up.isDown)
@@ -153,10 +159,6 @@ function update ()
         player.setVelocityX(0);        
         player.setVelocityY(160);
         player.anims.play('down', true);
-    }
-    else
-    {
-        player.anims.play('turn');
     }
 
     if(player.x > 440) {
@@ -202,8 +204,6 @@ function hitGhost (player, ghost)
     this.physics.pause();
 
     player.setTint(0xff0000);
-
-    player.anims.play('turn');
 
     gameOver = true;
 }
