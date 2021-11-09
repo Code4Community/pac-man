@@ -56,10 +56,10 @@ function create ()
     // The player and its settings
     player = this.physics.add.sprite(100, 450, 'pacman');
 
-    let pinkGhost = this.physics.add.sprite(150, 450, 'pink-ghost').setScale(0.2);
-    let redGhost = this.physics.add.sprite(200, 550, 'red-ghost').setScale(0.05);
-    let blueGhost = this.physics.add.sprite(300, 350, 'blue-ghost').setScale(0.2);
-    let yellowGhost = this.physics.add.sprite(400, 250, 'yellow-ghost').setScale(0.2);
+    let pinkGhost = this.physics.add.sprite(195, 230, 'pink-ghost').setScale(0.2);
+    let redGhost = this.physics.add.sprite(225, 230, 'red-ghost').setScale(0.05);
+    let blueGhost = this.physics.add.sprite(255, 230, 'blue-ghost').setScale(0.2);
+    let yellowGhost = this.physics.add.sprite(225, 185, 'yellow-ghost').setScale(0.2);
 
     ghosts = this.physics.add.group();
     ghosts.add(pinkGhost);
