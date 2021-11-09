@@ -54,7 +54,7 @@ function create ()
     map.createStaticLayer("Tile Layer 1", tileset);
 
     // The player and its settings
-    player = this.physics.add.sprite(100, 450, 'pacman');
+    player = this.physics.add.sprite(225, 88, 'pacman', 2);
 
     let pinkGhost = this.physics.add.sprite(195, 230, 'pink-ghost').setScale(0.2);
     let redGhost = this.physics.add.sprite(225, 230, 'red-ghost').setScale(0.05);
