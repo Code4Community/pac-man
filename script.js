@@ -162,21 +162,9 @@ function update ()
     }
 
     if(player.x > 440) {
-        player.disableBody(true, true);
-        player = this.physics.add.sprite(0, 232, 'pacman');
-
-        player.setVelocityX(160);
-        player.setVelocityY(0);
-
-        player.anims.play('right', true);
+        player.setPosition(0,232);
     } else if (player.x < 0) {
-        player.disableBody(true, true);
-        player = this.physics.add.sprite(440, 232, 'pacman');
-
-        player.setVelocityX(-160);
-        player.setVelocityY(0);
-
-        player.anims.play('left', true);
+        player.setPosition(440, 232);
     }
 }
 
