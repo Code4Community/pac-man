@@ -17,14 +17,14 @@ var config = {
 };
 
 var player;
-var stars;
-var bombs;
+var dots;
 var ghosts;
 var platforms;
 var cursors;
-var score = 20;
+var score = 0;
 var gameOver = false;
 var scoreText;
+var positionsArray;
 
 var map;
 var tileset;
@@ -34,10 +34,8 @@ var game = new Phaser.Game(config);
 
 function preload ()
 {
-    this.load.image('sky', 'assets/sky.png');
     this.load.image('ground', 'assets/platform.png');
-    this.load.image('star', 'assets/star.png');
-    this.load.image('bomb', 'assets/bomb.png');
+    this.load.image('dot', 'assets/dot.png');
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
     this.load.image('pink-ghost', 'assets/pink-ghost.png', { width: 5, height: 5 });
     this.load.image('red-ghost', 'assets/red-ghost.png', { frameWidth: 32, frameHeight: 48 });
@@ -61,10 +59,10 @@ function create ()
     // The player and its settings
     player = this.physics.add.sprite(spawnPoint.x, spawnPoint.y, 'pacman').setScale(.5);
 
-    let pinkGhost = this.physics.add.sprite(150, 450, 'pink-ghost').setScale(0.2);
-    let redGhost = this.physics.add.sprite(200, 550, 'red-ghost').setScale(0.05);
-    let blueGhost = this.physics.add.sprite(300, 350, 'blue-ghost').setScale(0.2);
-    let yellowGhost = this.physics.add.sprite(400, 250, 'yellow-ghost').setScale(0.2);
+    let pinkGhost = this.physics.add.sprite(195, 230, 'pink-ghost').setScale(0.2);
+    let redGhost = this.physics.add.sprite(225, 230, 'red-ghost').setScale(0.05);
+    let blueGhost = this.physics.add.sprite(255, 230, 'blue-ghost').setScale(0.2);
+    let yellowGhost = this.physics.add.sprite(225, 185, 'yellow-ghost').setScale(0.2);
 
     ghosts = this.physics.add.group();
     ghosts.add(pinkGhost);
@@ -87,13 +85,21 @@ function create ()
     });
 
     this.anims.create({
-        key: 'turn',
-        frames: [ { key: 'pacman', frame: 1 } ],
-        frameRate: 20
+        key: 'right',
+        frames: this.anims.generateFrameNumbers('pacman', { start: 0, end: 3}),
+        frameRate: 10,
+        repeat: -1
     });
 
     this.anims.create({
-        key: 'right',
+        key: 'up',
+        frames: this.anims.generateFrameNumbers('pacman', { start: 0, end: 3}),
+        frameRate: 10,
+        repeat: -1
+    });
+
+    this.anims.create({
+        key: 'down',
         frames: this.anims.generateFrameNumbers('pacman', { start: 0, end: 3}),
         frameRate: 10,
         repeat: -1
@@ -102,35 +108,35 @@ function create ()
     //  Input Events
     cursors = this.input.keyboard.createCursorKeys();
 
-    //  Some stars to collect, 12 in total, evenly spaced 70 pixels apart along the x axis
-    stars = this.physics.add.group({
-        key: 'star',
-        repeat: 11,
-        setXY: { x: 12, y: 0, stepX: 70 }
-    });
+    //  DOTS
+    //  The dots are 4 by 4, evenly spaced 20 pixels apart in the x or y direction
+    positionsArray = [
+        [100, 120],
+        [100, 140],
+        [100, 160],
+        [100, 180],
 
-    stars.children.iterate(function (child) {
+        [120, 120],
+        [140, 120],
+        [160, 120],
+        [180, 120],
 
-        //  Give each star a slightly different bounce
-        child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+        [180, 100],
+        [180, 80],
 
-    });
+    ];
+    dots = createDots(this,positionsArray);
 
-    bombs = this.physics.add.group();
 
     //  The score
-    scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+    scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#fff' });
 
-    //  Collide the player and the stars with the platforms
+    //  Collide the player with the platforms
     this.physics.add.collider(player, platforms);
-    this.physics.add.collider(stars, platforms);
-    this.physics.add.collider(bombs, platforms);
 
-    //  Checks to see if the player overlaps with any of the stars, if he does call the collectStar function
-    this.physics.add.overlap(player, stars, collectStar, null, this);
-
-    this.physics.add.collider(player, bombs, hitBomb, null, this);
-    this.physics.add.collider(player, ghosts, hitBomb, null, this);
+    //  Checks to see if the player overlaps with any of the dots, if he does call the eatDot function
+    this.physics.add.overlap(player, dots, eatDot, null, this);
+    this.physics.add.collider(player, ghosts, hitGhost, null, this);
 }
 
 function update ()
@@ -144,14 +150,12 @@ function update ()
     {
         player.setVelocityX(-160);
         player.setVelocityY(0);
-
         player.anims.play('left', true);
     }
     else if (cursors.right.isDown)
     {
         player.setVelocityX(160);
         player.setVelocityY(0);
-
         player.anims.play('right', true);
     }
     else if (cursors.up.isDown)
@@ -165,48 +169,49 @@ function update ()
         player.setVelocityY(160);
         player.anims.play('down', true);
     }
-    else
-    {
 
-        player.anims.play('turn');
+    if(player.x > 440) {
+        player.setPosition(0,232);
+    } else if (player.x < 0) {
+        player.setPosition(440, 232);
     }
 }
 
-function collectStar (player, star)
+function eatDot (player, dot)
 {
-    star.disableBody(true, true);
+    dot.disableBody(true, true);
 
     //  Add and update the score
     score += 10;
     scoreText.setText('Score: ' + score);
 
-    if (stars.countActive(true) === 0)
+    if (dots.countActive(true) === 0)
     {
-        //  A new batch of stars to collect
-        stars.children.iterate(function (child) {
-
-            child.enableBody(true, child.x, 0, true, true);
-
-        });
+        //  Create new batch of dots to collect
+        dots = createDots(this, positionsArray);
+        this.physics.add.overlap(player, dots, eatDot, null, this);
 
         var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
-
-        var bomb = bombs.create(x, 16, 'bomb');
-        bomb.setBounce(1);
-        bomb.setCollideWorldBounds(true);
-        bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
-        bomb.allowGravity = false;
 
     }
 }
 
-function hitBomb (player, bomb)
+function hitGhost (player, ghost)
 {
     this.physics.pause();
 
     player.setTint(0xff0000);
 
-    player.anims.play('turn');
-
     gameOver = true;
+}
+
+function createDots (realThis, positions) {
+    let dots = realThis.physics.add.group();
+    
+    for(let i = 0; i<positions.length; i++) {
+        let newDot = realThis.physics.add.sprite(positions[i][0],positions[i][1], 'dot');
+        dots.add(newDot);
+    }
+    
+    return dots;
 }
