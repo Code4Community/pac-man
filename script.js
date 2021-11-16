@@ -120,7 +120,7 @@ function create ()
 
 
     //  The score
-    scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+    scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#fff' });
 
     //  Collide the player with the platforms
     this.physics.add.collider(player, platforms);
