@@ -18,6 +18,7 @@ var config = {
 
 var player;
 var dots;
+var ghostDots;
 var ghosts;
 var platforms;
 var cursors;
@@ -36,11 +37,13 @@ function preload ()
 {
     this.load.image('ground', 'assets/platform.png');
     this.load.image('dot', 'assets/dot.png');
+    this.load.image('ghost-dot', 'assets/ghost-dot.png');
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
     this.load.image('pink-ghost', 'assets/pink-ghost.png', { width: 5, height: 5 });
     this.load.image('red-ghost', 'assets/red-ghost.png', { frameWidth: 32, frameHeight: 48 });
     this.load.image('blue-ghost', 'assets/blue-ghost.png', { frameWidth: 32, frameHeight: 48 });
     this.load.image('yellow-ghost', 'assets/yellow-ghost.png', { frameWidth: 32, frameHeight: 48 });
+    this.load.image('vulnerable-ghost', 'assets/vulnerable-ghost.webp', { frameWidth: 32, frameHeight: 48 });
     this.load.spritesheet('pacman', 'assets/pacman.png', { frameWidth: 32, frameHeight: 32 });
 
     this.load.image('tiles', 'assets/tiles.png');
@@ -114,10 +117,17 @@ function create ()
 
         [180, 100],
         [180, 80],
+        [180, 40],
 
     ];
     dots = createDots(this,positionsArray);
 
+    //  EAT GHOST DOTS
+    ghostDotsPositionsArray = [
+        [180, 60],
+    ];
+
+    ghostDots = createGhostDots(this,ghostDotsPositionsArray);
 
     //  The score
     scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
@@ -125,9 +135,11 @@ function create ()
     //  Collide the player with the platforms
     this.physics.add.collider(player, platforms);
 
-    //  Checks to see if the player overlaps with any of the dots, if he does call the eatDot function
+    //  Checks to see if the player overlaps with any of the normal dots, if he does call the eatDot function
     this.physics.add.overlap(player, dots, eatDot, null, this);
-    this.physics.add.collider(player, ghosts, hitGhost, null, this);
+    //  Checks to see if the player overlaps with any of the eat-ghost powerup dots, if he does call the eatGhostDot function
+    this.physics.add.overlap(player, ghostDots, eatGhostDot, null, this);
+    this.physics.add.collider(player, ghosts, hitGhost, null, this).name = 'hit_ghost_collider';
 }
 
 function update ()
@@ -180,11 +192,44 @@ function eatDot (player, dot)
     {
         //  Create new batch of dots to collect
         dots = createDots(this, positionsArray);
+        ghostDots = createGhostDots(this, ghostDotsPositionsArray);
         this.physics.add.overlap(player, dots, eatDot, null, this);
+        this.physics.add.overlap(player, ghostDots, eatGhostDot, null, this);
 
         var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
-
     }
+}
+
+function eatGhostDot (player, ghostDot)
+{
+    ghostDot.disableBody(true, true);
+
+    // Change all ghost images to blue vulnerable ghost
+    ghosts.children.iterate((child) => {
+        child.setTexture('vulnerable-ghost').setScale(.07);
+    });
+    
+    // Remove collider where player dies if it hits a ghost
+    this.physics.world.colliders.getActive().find(function(i){
+        return i.name == 'hit_ghost_collider'
+    }).destroy();
+
+    // Add collider where player can eat ghosts
+    this.physics.add.collider(player, ghosts, eatGhost, null, this);
+
+    //  Add and update the score
+    score += 50;
+    scoreText.setText('Score: ' + score);
+
+}
+
+function eatGhost (player, ghost)
+{
+    ghost.disableBody(true, true);
+
+    //  Add and update the score
+    score += 50;
+    scoreText.setText('Score: ' + score);
 }
 
 function hitGhost (player, ghost)
@@ -203,6 +248,15 @@ function createDots (realThis, positions) {
         let newDot = realThis.physics.add.sprite(positions[i][0],positions[i][1], 'dot');
         dots.add(newDot);
     }
-    
     return dots;
+}
+
+function createGhostDots (realThis, positions) {
+    let ghostDots = realThis.physics.add.group();
+    
+    for(let i = 0; i<positions.length; i++) {
+        let newDot = realThis.physics.add.sprite(positions[i][0],positions[i][1], 'ghost-dot').setScale(0.02);
+        ghostDots.add(newDot);
+    }
+    return ghostDots;
 }
