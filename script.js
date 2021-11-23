@@ -17,7 +17,7 @@ var config = {
 };
 
 const PLAYER_SPEED = 160;
-const GHOST_SPEED = 180;
+const GHOST_SPEED = 2;
 
 var player;
 var dots;
@@ -62,10 +62,10 @@ function create ()
     // The player and its settings
     player = this.physics.add.sprite(spawnPoint.x, spawnPoint.y, 'pacman').setScale(.5);
 
-    let pinkGhost = this.physics.add.sprite(195, 230, 'pink-ghost').setScale(0.2);
-    let redGhost = this.physics.add.sprite(225, 230, 'red-ghost').setScale(0.05);
-    let blueGhost = this.physics.add.sprite(255, 230, 'blue-ghost').setScale(0.2);
-    let yellowGhost = this.physics.add.sprite(225, 185, 'yellow-ghost').setScale(0.2);
+    let pinkGhost = this.physics.add.sprite(195, 230, 'pink-ghost').setScale(0.1);
+    let redGhost = this.physics.add.sprite(225, 230, 'red-ghost').setScale(0.025);
+    let blueGhost = this.physics.add.sprite(255, 230, 'blue-ghost').setScale(0.1);
+    let yellowGhost = this.physics.add.sprite(225, 185, 'yellow-ghost').setScale(0.1);
 
     ghosts = this.physics.add.group();
     ghosts.add(pinkGhost);
@@ -225,3 +225,20 @@ function moveDown(ghost)
     ghost.setVelocityY(GHOST_SPEED);
     ghost.setVelocityX(0);     
 }
+
+function isMoving(ghost)
+{
+    if (Math.abs(ghost.velocity) > 0)
+    {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function distance(player, ghost)
+{
+    return distanceBetween(player, ghost)
+}
+
+
