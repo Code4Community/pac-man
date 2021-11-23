@@ -16,6 +16,9 @@ var config = {
     }
 };
 
+const PLAYER_SPEED = 160;
+const GHOST_SPEED = 180;
+
 var player;
 var dots;
 var ghosts;
@@ -78,28 +81,7 @@ function create ()
 
     //  Our player animations, turning, walking left and walking right.
     this.anims.create({
-        key: 'left',
-        frames: this.anims.generateFrameNumbers('pacman', { start: 0, end: 2}),
-        frameRate: 10,
-        repeat: -1
-    });
-
-    this.anims.create({
-        key: 'right',
-        frames: this.anims.generateFrameNumbers('pacman', { start: 0, end: 2}),
-        frameRate: 10,
-        repeat: -1
-    });
-
-    this.anims.create({
-        key: 'up',
-        frames: this.anims.generateFrameNumbers('pacman', { start: 0, end: 2}),
-        frameRate: 10,
-        repeat: -1
-    });
-
-    this.anims.create({
-        key: 'down',
+        key: 'chomp',
         frames: this.anims.generateFrameNumbers('pacman', { start: 0, end: 2}),
         frameRate: 10,
         repeat: -1
@@ -148,29 +130,29 @@ function update ()
 
     if (cursors.left.isDown)
     {
-        player.setVelocityX(-160);
+        player.setVelocityX(-PLAYER_SPEED);
         player.setVelocityY(0);
-        player.anims.play('left', true);
+        player.anims.play('chomp', true);
         player.setAngle(180);
     }
     else if (cursors.right.isDown)
     {
-        player.setVelocityX(160);
+        player.setVelocityX(PLAYER_SPEED);
         player.setVelocityY(0);
-        player.anims.play('right', true);
+        player.anims.play('chomp', true);
         player.setAngle(0);
     }
     else if (cursors.up.isDown)
     {
         player.setVelocityX(0);        
-        player.setVelocityY(-160);
-        player.anims.play('up', true);
+        player.setVelocityY(-PLAYER_SPEED);
+        player.anims.play('chomp', true);
         player.setAngle(270);
     }
     else if (cursors.down.isDown) {
         player.setVelocityX(0);        
-        player.setVelocityY(160);
-        player.anims.play('down', true);
+        player.setVelocityY(PLAYER_SPEED);
+        player.anims.play('chomp', true);
         player.setAngle(90);
     }
 
@@ -218,4 +200,28 @@ function createDots (realThis, positions) {
     }
     
     return dots;
+}
+
+function moveLeft(ghost) 
+{
+    ghost.setVelocityX(-GHOST_SPEED);
+    ghost.setVelocityY(0);
+}
+
+function moveRight(ghost) 
+{
+    ghost.setVelocityX(GHOST_SPEED);
+    ghost.setVelocityY(0);
+}
+
+function moveUp(ghost)
+{
+    ghost.setVelocityY(-GHOST_SPEED);
+    ghost.setVelocityX(0);     
+}
+
+function moveDown(ghost)
+{
+    ghost.setVelocityY(GHOST_SPEED);
+    ghost.setVelocityX(0);     
 }
