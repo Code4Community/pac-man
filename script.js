@@ -61,6 +61,7 @@ function create ()
 
     // The player and its settings
     player = this.physics.add.sprite(spawnPoint.x, spawnPoint.y, 'pacman').setScale(.5);
+    player.nextMove = null;
 
     let pinkGhost = this.physics.add.sprite(195, 230, 'pink-ghost').setScale(0.1);
     let redGhost = this.physics.add.sprite(225, 230, 'red-ghost').setScale(0.025);
@@ -121,35 +122,36 @@ function create ()
     this.physics.add.collider(player, ghosts, hitGhost, null, this);
 }
 
-function update ()
-{
-    if (gameOver)
-    {
+function update () {
+    if (gameOver) {
         return;
     }
 
-    if (cursors.left.isDown)
-    {
-        moveLeft(player, PLAYER_SPEED);
+    if (cursors.left.isDown) {
+        player.nextMove = moveLeft;
         player.anims.play('chomp', true);
         player.setAngle(180);
     }
-    else if (cursors.right.isDown)
-    {
-        moveRight(player, PLAYER_SPEED);
+    else if (cursors.right.isDown) {
+        player.nextMove = moveRight;
         player.anims.play('chomp', true);
         player.setAngle(0);
     }
-    else if (cursors.up.isDown)
-    {
-        moveUp(player, PLAYER_SPEED);
+    else if (cursors.up.isDown) {
+        player.nextMove = moveUp;
         player.anims.play('chomp', true);
         player.setAngle(270);
     }
     else if (cursors.down.isDown) {
-        moveDown(player, PLAYER_SPEED);
+        player.nextMove = moveDown;
         player.anims.play('chomp', true);
         player.setAngle(90);
+    }
+
+    if (player.nextMove) {
+        // TODO: if player can move in this new direction
+        player.nextMove(player, PLAYER_SPEED);
+        player.nextMove = null;
     }
 
     if(player.x > 440) {
