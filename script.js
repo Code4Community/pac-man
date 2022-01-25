@@ -16,6 +16,9 @@ var config = {
     }
 };
 
+const PLAYER_SPEED = 160;
+const GHOST_SPEED = 2;
+
 var player;
 var dots;
 var ghostDots;
@@ -61,11 +64,12 @@ function create ()
 
     // The player and its settings
     player = this.physics.add.sprite(spawnPoint.x, spawnPoint.y, 'pacman').setScale(.5);
+    player.nextMove = null;
 
-    let pinkGhost = this.physics.add.sprite(195, 230, 'pink-ghost').setScale(0.2);
-    let redGhost = this.physics.add.sprite(225, 230, 'red-ghost').setScale(0.05);
-    let blueGhost = this.physics.add.sprite(255, 230, 'blue-ghost').setScale(0.2);
-    let yellowGhost = this.physics.add.sprite(225, 185, 'yellow-ghost').setScale(0.2);
+    let pinkGhost = this.physics.add.sprite(195, 230, 'pink-ghost').setScale(0.1);
+    let redGhost = this.physics.add.sprite(225, 230, 'red-ghost').setScale(0.025);
+    let blueGhost = this.physics.add.sprite(255, 230, 'blue-ghost').setScale(0.1);
+    let yellowGhost = this.physics.add.sprite(225, 185, 'yellow-ghost').setScale(0.1);
 
     ghosts = this.physics.add.group();
     ghosts.add(pinkGhost);
@@ -81,28 +85,7 @@ function create ()
 
     //  Our player animations, turning, walking left and walking right.
     this.anims.create({
-        key: 'left',
-        frames: this.anims.generateFrameNumbers('pacman', { start: 0, end: 2}),
-        frameRate: 10,
-        repeat: -1
-    });
-
-    this.anims.create({
-        key: 'right',
-        frames: this.anims.generateFrameNumbers('pacman', { start: 0, end: 2}),
-        frameRate: 10,
-        repeat: -1
-    });
-
-    this.anims.create({
-        key: 'up',
-        frames: this.anims.generateFrameNumbers('pacman', { start: 0, end: 2}),
-        frameRate: 10,
-        repeat: -1
-    });
-
-    this.anims.create({
-        key: 'down',
+        key: 'chomp',
         frames: this.anims.generateFrameNumbers('pacman', { start: 0, end: 2}),
         frameRate: 10,
         repeat: -1
@@ -153,46 +136,77 @@ function create ()
     this.physics.add.collider(player, ghosts, hitGhost, null, this).name = 'hit_ghost_collider';
 }
 
-function update ()
-{
-    if (gameOver)
-    {
+function update () {
+    if (gameOver) {
         return;
     }
-
-    if (cursors.left.isDown)
-    {
-        player.setVelocityX(-160);
-        player.setVelocityY(0);
-        player.anims.play('left', true);
-        player.setAngle(180);
+    if (cursors.left.isDown) {
+        moveLeft(player);
     }
-    else if (cursors.right.isDown)
-    {
-        player.setVelocityX(160);
-        player.setVelocityY(0);
-        player.anims.play('right', true);
-        player.setAngle(0);
+    else if (cursors.right.isDown) {
+        moveRight(player);
     }
-    else if (cursors.up.isDown)
-    {
-        player.setVelocityX(0);        
-        player.setVelocityY(-160);
-        player.anims.play('up', true);
-        player.setAngle(270);
+    else if (cursors.up.isDown) {
+        moveUp(player);
     }
     else if (cursors.down.isDown) {
-        player.setVelocityX(0);        
-        player.setVelocityY(160);
-        player.anims.play('down', true);
-        player.setAngle(90);
+        moveDown(player);
     }
+
+    processNextMove(player, PLAYER_SPEED);
+    
 
     if(player.x > 440) {
         player.setPosition(0,232);
     } else if (player.x < 0) {
         player.setPosition(440, 232);
     }
+}
+
+function processNextMove (sprite, speed) {
+    if (sprite.nextMove) {
+        
+        if (sprite.nextMove.sign * sprite.body.velocity[sprite.nextMove.dir] > 0) {
+            if (sprite.nextMove.dir == 'x') {
+                sprite.setVelocityY(0);
+                sprite.setAngle(sprite.nextMove.sign == 1 ? 0 : 180);
+            } else {
+                sprite.setVelocityX(0);
+                sprite.setAngle(sprite.nextMove.sign == 1 ? 90 : 270);
+            }
+            sprite.anims.play('chomp', true);
+            
+            sprite.nextMove = null;
+        } else {
+            move(sprite, speed);
+
+        }
+    }
+}
+
+
+function moveRight(sprite) {
+    setNextMove(sprite, 'x', 1);
+}
+
+function moveLeft(sprite) {
+    setNextMove(sprite, 'x', -1);
+}
+
+function moveUp(sprite) {
+    setNextMove(sprite, 'y', -1);
+}
+
+function moveDown(sprite) {
+    setNextMove(sprite, 'y', 1);
+}
+
+
+function setNextMove (sprite, direction, sign) {
+    sprite.nextMove = {
+        dir: direction,
+        sign: sign
+    };
 }
 
 function eatDot (player, dot)
@@ -301,3 +315,27 @@ function enableGhosts() {
     // Add collider where player can eat ghosts
     this.physics.add.collider(player, ghosts, hitGhost, null, this);
 }
+
+function move (sprite, speed) {
+    if (sprite.nextMove.dir == 'x')
+        sprite.setVelocityX(speed * sprite.nextMove.sign);
+    else
+        sprite.setVelocityY(speed * sprite.nextMove.sign);
+}
+
+function isMoving(ghost)
+{
+    if (Math.abs(ghost.velocity) > 0)
+    {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function distance(player, ghost)
+{
+    return distanceBetween(player, ghost)
+}
+
+
