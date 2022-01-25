@@ -126,32 +126,44 @@ function update () {
     if (gameOver) {
         return;
     }
-
     if (cursors.left.isDown) {
-        player.nextMove = moveLeft;
-        player.anims.play('chomp', true);
-        player.setAngle(180);
+        player.nextMove = moveLeft;  
     }
     else if (cursors.right.isDown) {
-        player.nextMove = moveRight;
-        player.anims.play('chomp', true);
-        player.setAngle(0);
+        player.nextMove = moveRight; 
     }
     else if (cursors.up.isDown) {
         player.nextMove = moveUp;
-        player.anims.play('chomp', true);
-        player.setAngle(270);
     }
     else if (cursors.down.isDown) {
         player.nextMove = moveDown;
-        player.anims.play('chomp', true);
-        player.setAngle(90);
     }
 
     if (player.nextMove) {
-        // TODO: if player can move in this new direction
-        player.nextMove(player, PLAYER_SPEED);
-        player.nextMove = null;
+        
+        if (player.nextMove == moveUp && player.body.velocity.y < 0) {
+            player.setVelocityX(0);
+            player.anims.play('chomp', true);
+            player.setAngle(270);
+            player.nextMove = null;
+        } else if (player.nextMove == moveDown && player.body.velocity.y > 0) {
+            player.setVelocityX(0);
+            player.anims.play('chomp', true);
+            player.setAngle(90);
+            player.nextMove = null;
+        } else if (player.nextMove == moveLeft && player.body.velocity.x < 0) {
+            player.setVelocityY(0);
+            player.anims.play('chomp', true);
+            player.setAngle(180);
+            player.nextMove = null;
+        } else if (player.nextMove == moveRight && player.body.velocity.x > 0) {
+            player.setVelocityY(0);
+            player.anims.play('chomp', true);
+            player.setAngle(0);
+            player.nextMove = null;
+        } else {
+            player.nextMove(player, PLAYER_SPEED);
+        }
     }
 
     if(player.x > 440) {
@@ -203,25 +215,21 @@ function createDots (realThis, positions) {
 function moveLeft(sprite, speed) 
 {
     sprite.setVelocityX(-speed);
-    sprite.setVelocityY(0);
 }
 
 function moveRight(sprite, speed)  
 {
     sprite.setVelocityX(speed);
-    sprite.setVelocityY(0);
 }
 
 function moveUp(sprite, speed) 
 {
-    sprite.setVelocityY(-speed);
-    sprite.setVelocityX(0);     
+    sprite.setVelocityY(-speed);   
 }
 
 function moveDown(sprite, speed) 
 {
-    sprite.setVelocityY(speed);
-    sprite.setVelocityX(0);     
+    sprite.setVelocityY(speed);     
 }
 
 function isMoving(ghost)
