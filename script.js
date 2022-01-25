@@ -208,7 +208,7 @@ function eatGhostDot (player, ghostDot)
     ghosts.children.iterate((child) => {
         child.setTexture('vulnerable-ghost').setScale(.07);
     });
-    
+
     // Remove collider where player dies if it hits a ghost
     this.physics.world.colliders.getActive().find(function(i){
         return i.name == 'hit_ghost_collider'
@@ -221,6 +221,16 @@ function eatGhostDot (player, ghostDot)
     score += 50;
     scoreText.setText('Score: ' + score);
 
+    if (dots.countActive(true) === 0)
+    {
+        //  Create new batch of dots to collect
+        dots = createDots(this, positionsArray);
+        ghostDots = createGhostDots(this, ghostDotsPositionsArray);
+        this.physics.add.overlap(player, dots, eatDot, null, this);
+        this.physics.add.overlap(player, ghostDots, eatGhostDot, null, this);
+
+        var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+    }
 }
 
 function eatGhost (player, ghost)
