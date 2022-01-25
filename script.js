@@ -127,50 +127,72 @@ function update () {
         return;
     }
     if (cursors.left.isDown) {
-        player.nextMove = moveLeft;  
+        moveLeft(player);
     }
     else if (cursors.right.isDown) {
-        player.nextMove = moveRight; 
+        moveRight(player);
     }
     else if (cursors.up.isDown) {
-        player.nextMove = moveUp;
+        moveUp(player);
     }
     else if (cursors.down.isDown) {
-        player.nextMove = moveDown;
+        moveDown(player);
     }
 
-    if (player.nextMove) {
-        
-        if (player.nextMove == moveUp && player.body.velocity.y < 0) {
-            player.setVelocityX(0);
-            player.anims.play('chomp', true);
-            player.setAngle(270);
-            player.nextMove = null;
-        } else if (player.nextMove == moveDown && player.body.velocity.y > 0) {
-            player.setVelocityX(0);
-            player.anims.play('chomp', true);
-            player.setAngle(90);
-            player.nextMove = null;
-        } else if (player.nextMove == moveLeft && player.body.velocity.x < 0) {
-            player.setVelocityY(0);
-            player.anims.play('chomp', true);
-            player.setAngle(180);
-            player.nextMove = null;
-        } else if (player.nextMove == moveRight && player.body.velocity.x > 0) {
-            player.setVelocityY(0);
-            player.anims.play('chomp', true);
-            player.setAngle(0);
-            player.nextMove = null;
-        } else {
-            player.nextMove(player, PLAYER_SPEED);
-        }
-    }
+    processNextMove(player, PLAYER_SPEED);
+    
 
     if(player.x > 440) {
         player.setPosition(0,232);
     } else if (player.x < 0) {
         player.setPosition(440, 232);
     }
+}
+
+function processNextMove (sprite, speed) {
+    if (sprite.nextMove) {
+        
+        if (sprite.nextMove.sign * sprite.body.velocity[sprite.nextMove.dir] > 0) {
+            if (sprite.nextMove.dir == 'x') {
+                sprite.setVelocityY(0);
+                sprite.setAngle(sprite.nextMove.sign == 1 ? 0 : 180);
+            } else {
+                sprite.setVelocityX(0);
+                sprite.setAngle(sprite.nextMove.sign == 1 ? 90 : 270);
+            }
+            sprite.anims.play('chomp', true);
+            
+            sprite.nextMove = null;
+        } else {
+            move(sprite, speed);
+
+        }
+    }
+}
+
+
+function moveRight(sprite) {
+    setNextMove(sprite, 'x', 1);
+}
+
+function moveLeft(sprite) {
+    setNextMove(sprite, 'x', -1);
+}
+
+function moveUp(sprite) {
+    setNextMove(sprite, 'y', -1);
+}
+
+function moveDown(sprite) {
+    setNextMove(sprite, 'y', 1);
+}
+
+
+function setNextMove (sprite, direction, sign) {
+    sprite.nextMove = {
+        dir: direction,
+        sign: sign
+    };
 }
 
 function eatDot (player, dot)
@@ -212,24 +234,12 @@ function createDots (realThis, positions) {
     return dots;
 }
 
-function moveLeft(sprite, speed) 
-{
-    sprite.setVelocityX(-speed);
-}
 
-function moveRight(sprite, speed)  
-{
-    sprite.setVelocityX(speed);
-}
-
-function moveUp(sprite, speed) 
-{
-    sprite.setVelocityY(-speed);   
-}
-
-function moveDown(sprite, speed) 
-{
-    sprite.setVelocityY(speed);     
+function move (sprite, speed) {
+    if (sprite.nextMove.dir == 'x')
+        sprite.setVelocityX(speed * sprite.nextMove.sign);
+    else
+        sprite.setVelocityY(speed * sprite.nextMove.sign);
 }
 
 function isMoving(ghost)
