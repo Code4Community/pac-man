@@ -114,26 +114,28 @@ function create ()
     //  DOTS
     //  The dots are 4 by 4, evenly spaced 20 pixels apart in the x or y direction
     positionsArray = [
-        [100, 120],
-        [100, 140],
-        [100, 160],
-        [100, 180],
+        [105, 170],
+        [105, 150],
+        [105, 130],
+        [105, 110],
+        [105, 90],
 
-        [120, 120],
-        [140, 120],
-        [160, 120],
-        [180, 120],
+        [120, 90],
+        [140, 90],
+        [160, 90],
+        [180, 90],
+        [200, 90],
 
-        [180, 100],
-        [180, 80],
-        [180, 40],
+        //[200, 70],
+        [200, 50],
+        [200, 30],
 
     ];
     dots = createDots(this,positionsArray);
 
     //  EAT GHOST DOTS
     ghostDotsPositionsArray = [
-        [180, 60],
+        [200, 70],
     ];
 
     ghostDots = createGhostDots(this,ghostDotsPositionsArray);
@@ -201,9 +203,8 @@ function eatDot (player, dot)
     score += 10;
     scoreText.setText('Score: ' + score);
 
-    if (dots.countActive(true) === 0)
+    if ((dots.countActive(true) === 0) && ghostDots.countActive(true) === 0)
     {
-        //  Create new batch of dots to collect
         dots = createDots(this, positionsArray);
         ghostDots = createGhostDots(this, ghostDotsPositionsArray);
         this.physics.add.overlap(player, dots, eatDot, null, this);
@@ -234,7 +235,9 @@ function eatGhostDot (player, ghostDot)
     score += 50;
     scoreText.setText('Score: ' + score);
 
-    if (dots.countActive(true) === 0)
+    setTimeout(enableGhosts, 1000);
+
+    /*if (dots.countActive(true) === 0)
     {
         //  Create new batch of dots to collect
         dots = createDots(this, positionsArray);
@@ -243,7 +246,7 @@ function eatGhostDot (player, ghostDot)
         this.physics.add.overlap(player, ghostDots, eatGhostDot, null, this);
 
         var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
-    }
+    }*/
 }
 
 function eatGhost (player, ghost)
@@ -282,4 +285,19 @@ function createGhostDots (realThis, positions) {
         ghostDots.add(newDot);
     }
     return ghostDots;
+}
+
+function enableGhosts() {
+    // Change all ghost images to blue vulnerable ghost
+    ghosts.children.iterate((child) => {
+        child.setTexture('pink-ghost');
+    });
+
+    // Remove collider where player can eat ghosts
+    this.physics.world.colliders.getActive().find(function(i){
+        return i.name == 'eat_ghost_collider'
+    }).destroy();
+
+    // Add collider where player can eat ghosts
+    this.physics.add.collider(player, ghosts, hitGhost, null, this);
 }
