@@ -54,10 +54,13 @@ function create ()
 {
     map = this.make.tilemap({ key: "map" });
     tileset = map.addTilesetImage("blueTiles", 'tiles');
-    map.createStaticLayer("Tile Layer 1", tileset);
+    worldLayer = map.createStaticLayer('Tile Layer 1', tileset);
+    worldLayer.setCollisionByExclusion(-1, true);
+
+    const spawnPoint = map.findObject("Objects", obj => obj.name === "Spawn Point 1");
 
     // The player and its settings
-    player = this.physics.add.sprite(225, 88, 'pacman', 2);
+    player = this.physics.add.sprite(spawnPoint.x, spawnPoint.y, 'pacman').setScale(.5);
 
     let pinkGhost = this.physics.add.sprite(195, 230, 'pink-ghost').setScale(0.2);
     let redGhost = this.physics.add.sprite(225, 230, 'red-ghost').setScale(0.05);
@@ -70,31 +73,37 @@ function create ()
     ghosts.add(blueGhost);
     ghosts.add(yellowGhost);
 
+    this.physics.add.collider(player, worldLayer);
+    this.physics.add.collider(ghosts, worldLayer)
+
+    //  Player physics properties. Give the little guy a slight bounce.
+    player.setCollideWorldBounds(true);
+
     //  Our player animations, turning, walking left and walking right.
     this.anims.create({
         key: 'left',
-        frames: this.anims.generateFrameNumbers('pacman', { start: 0, end: 3 }),
+        frames: this.anims.generateFrameNumbers('pacman', { start: 0, end: 2}),
         frameRate: 10,
         repeat: -1
     });
 
     this.anims.create({
         key: 'right',
-        frames: this.anims.generateFrameNumbers('pacman', { start: 0, end: 3}),
+        frames: this.anims.generateFrameNumbers('pacman', { start: 0, end: 2}),
         frameRate: 10,
         repeat: -1
     });
 
     this.anims.create({
         key: 'up',
-        frames: this.anims.generateFrameNumbers('pacman', { start: 0, end: 3}),
+        frames: this.anims.generateFrameNumbers('pacman', { start: 0, end: 2}),
         frameRate: 10,
         repeat: -1
     });
 
     this.anims.create({
         key: 'down',
-        frames: this.anims.generateFrameNumbers('pacman', { start: 0, end: 3}),
+        frames: this.anims.generateFrameNumbers('pacman', { start: 0, end: 2}),
         frameRate: 10,
         repeat: -1
     });
@@ -130,7 +139,7 @@ function create ()
     ghostDots = createGhostDots(this,ghostDotsPositionsArray);
 
     //  The score
-    scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+    scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#fff' });
 
     //  Collide the player with the platforms
     this.physics.add.collider(player, platforms);
@@ -154,23 +163,27 @@ function update ()
         player.setVelocityX(-160);
         player.setVelocityY(0);
         player.anims.play('left', true);
+        player.setAngle(180);
     }
     else if (cursors.right.isDown)
     {
         player.setVelocityX(160);
         player.setVelocityY(0);
         player.anims.play('right', true);
+        player.setAngle(0);
     }
     else if (cursors.up.isDown)
     {
         player.setVelocityX(0);        
         player.setVelocityY(-160);
         player.anims.play('up', true);
+        player.setAngle(270);
     }
     else if (cursors.down.isDown) {
         player.setVelocityX(0);        
         player.setVelocityY(160);
         player.anims.play('down', true);
+        player.setAngle(90);
     }
 
     if(player.x > 440) {
