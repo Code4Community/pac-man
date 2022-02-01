@@ -1,7 +1,8 @@
 var config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    parent: 'game',
+    width: 450,
+    height: 550,
     physics: {
         default: 'arcade',
         arcade: {
@@ -34,6 +35,11 @@ var tileset;
 var worldLayer;
 
 var game = new Phaser.Game(config);
+
+document.getElementById('start-over').addEventListener('click', () => {
+    game.destroy(true);
+    game = new Phaser.Game(config);
+});
 
 function preload ()
 {
@@ -112,7 +118,7 @@ function create ()
 
 
     //  The score
-    scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#fff' });
+    scoreText = this.add.text(0, 510, 'Score: 0', { fontSize: '32px', fill: '#fff' });
 
     //  Collide the player with the platforms
     this.physics.add.collider(player, platforms);
