@@ -1,5 +1,6 @@
 var config = {
     type: Phaser.AUTO,
+    parent: 'game',
     width: 450,
     height: 550,
     physics: {
@@ -34,6 +35,11 @@ var tileset;
 var worldLayer;
 
 var game = new Phaser.Game(config);
+
+document.getElementById('start-over').addEventListener('click', () => {
+    game.destroy(true);
+    game = new Phaser.Game(config);
+});
 
 function preload ()
 {
