@@ -36,6 +36,7 @@ var worldLayer;
 
 var game = new Phaser.Game(config);
 
+const TILE_SIZE = 16
 document.getElementById('start-over').addEventListener('click', () => {
     game.destroy(true);
     game = new Phaser.Game(config);
@@ -98,22 +99,24 @@ function create ()
     cursors = this.input.keyboard.createCursorKeys();
 
     //  DOTS
-    //  The dots are 4 by 4, evenly spaced 20 pixels apart in the x or y direction
-    positionsArray = [
-        [100, 120],
-        [100, 140],
-        [100, 160],
-        [100, 180],
+    //  The dots are 4 by 4. One is placed per tile in tilemap. Tiles are 16px, dots are placed in the center of tile
+    positionsArray = [];
 
-        [120, 120],
-        [140, 120],
-        [160, 120],
-        [180, 120],
+    // iterates through each tile on tilemap, checks if there is not a tile (or blocked location), and draws
+    let count = 0;
+    for (let i = 1; i < map.width; i++) {
+        for (let j = 1; j < map.height; j++){
+            // checking if tile exists at centered position of current tile
+            let centeredPosX = (i * TILE_SIZE) + (TILE_SIZE / 2); 
+            let centeredPosY = (j * TILE_SIZE) + (TILE_SIZE / 2);
+            let currentTile = map.getTileAt(i,j);
 
-        [180, 100],
-        [180, 80],
+            if (currentTile === null){
+                positionsArray.push([centeredPosX, centeredPosY]);
+            }
+        }
+    }
 
-    ];
     dots = createDots(this,positionsArray);
 
 
