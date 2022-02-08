@@ -269,11 +269,6 @@ function isMoving(ghost)
     }
 }
 
-// function distance(player, ghost)
-// {
-//     return distanceBetween(player, ghost)
-// }
-
 
 
 
