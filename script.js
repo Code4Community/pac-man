@@ -1,5 +1,6 @@
-// Constant for directions string
+// Constant for directions string and ghost colors
 const DIRECTIONS = ['up', 'right', 'down', 'left'];
+const GHOSTS = ['pink', 'red', 'blue', 'yellow'];
 
 var config = {
     type: Phaser.AUTO,
@@ -77,12 +78,16 @@ function create ()
     ghosts.add(blueGhost);
     ghosts.add(yellowGhost);
 
+    {
+        let i = 0;
+        ghosts.children.entries.forEach(ghost => ghost.color = GHOSTS[i++]);
+    }
 
     
     
 
     this.physics.add.collider(player, worldLayer);
-    this.physics.add.collider(ghosts, worldLayer)
+    this.physics.add.collider(ghosts, worldLayer);
 
     
 
@@ -130,10 +135,7 @@ function create ()
     this.physics.add.overlap(player, dots, eatDot, null, this);
     this.physics.add.collider(player, ghosts, hitGhost, null, this);
 
-    // Set ghost sizes TODO ------ MAKE THIS WORK -----------------------------------------------
-    for (let i = 0; i < ghosts.children.entries.length; i++) {
-        ghosts.children.entries[i].setSize(160, 160);
-    }
+    // Set ghost sizes TODO ---------------------
 }
 
 function update () {
@@ -154,9 +156,8 @@ function update () {
     }
 
     processNextMove(player, PLAYER_SPEED);
-    for (let i = 0; i < ghosts.children.entries.length; i++) {
-        processNextMove(ghosts.children.entries[i], GHOST_SPEED, true);
-    }
+
+    ghosts.children.entries.forEach(ghost => processNextMove(ghost, GHOST_SPEED, true));
 
     if(player.x > 440) {
         player.setPosition(0,232);
@@ -283,9 +284,7 @@ function isMoving(ghost)
 
 // Helper function to return a specific ghost
 function getGhost(color) {
-    const GHOSTS = ['pink', 'red', 'blue', 'yellow'];
-    for (let i = 0; i < GHOSTS.length; i++)
-        if (GHOSTS[i] == color) return ghosts.children.entries[i];
+    return ghosts.children.entries.find(ghost=>ghost.color == color);
 }
 
 
@@ -335,15 +334,16 @@ function direction (color, offset = 0) {
     let angle = Math.atan2(dists[1],dists[0]) * 180 / Math.PI;
     angle += offset;
     if (angle > 180) angle -= 360;
-    if (angle < -180) angle += 360;
+    else if (angle < -180) angle += 360;
     // Check directions
     if (angle > -45 && angle <= 45)
         return 'right';
-    if (angle > 45 && angle <= 135)
+    else if (angle > 45 && angle <= 135)
         return 'down';
-    if (angle > 135 || angle < -135)
+    else if (angle > 135 || angle < -135)
         return 'left';
-    return 'up';
+    else
+        return 'up';
 }
 
 
