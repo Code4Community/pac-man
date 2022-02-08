@@ -36,7 +36,7 @@ var worldLayer;
 
 var game = new Phaser.Game(config);
 
-const tileSize = 16
+const TILE_SIZE = 16
 document.getElementById('start-over').addEventListener('click', () => {
     game.destroy(true);
     game = new Phaser.Game(config);
@@ -107,8 +107,8 @@ function create ()
     for (let i = 1; i < map.width; i++) {
         for (let j = 1; j < map.height; j++){
             // checking if tile exists at centered position of current tile
-            let centeredPosX = (i * tileSize) + (tileSize / 2); 
-            let centeredPosY = (j * tileSize) + (tileSize / 2);
+            let centeredPosX = (i * TILE_SIZE) + (TILE_SIZE / 2); 
+            let centeredPosY = (j * TILE_SIZE) + (TILE_SIZE / 2);
             let currentTile = map.getTileAt(i,j);
 
             if (currentTile === null){
