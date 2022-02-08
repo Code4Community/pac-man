@@ -130,10 +130,9 @@ function create ()
     this.physics.add.overlap(player, dots, eatDot, null, this);
     this.physics.add.collider(player, ghosts, hitGhost, null, this);
 
-
     // Set ghost sizes TODO ------ MAKE THIS WORK -----------------------------------------------
     for (let i = 0; i < ghosts.children.entries.length; i++) {
-        ghosts.children.entries[i].setSize(16, 16);
+        ghosts.children.entries[i].setSize(160, 160);
     }
 }
 
@@ -326,6 +325,10 @@ function distance (color) {
 }
 
 // direction()
+// Gets the direction between the ghost of the given color and pac man
+// Offset figues out how much to offset the axes
+// For example, offset 0 will show the direction straight towards pacman, and offset 180 will return the direction away from pac man
+// 90 degrees will be orthogonal in either direction
 function direction (color, offset = 0) {
     let ghost = getGhost(color);
     let dists = [player.body.position.x - ghost.body.position.x, player.body.position.y - ghost.body.position.y];
