@@ -33,9 +33,6 @@ var worldLayer;
 var game = new Phaser.Game(config);
 
 const tileSize = 16
-const dimensions = tileSize * 28; // 28 is number of tiles
-const nDots = 240;
-
 
 function preload ()
 {
@@ -115,25 +112,20 @@ function create ()
 
     //  DOTS
     //  The dots are 4 by 4. One is placed per tile in tilemap. Tiles are 16px, dots are placed in the center of tile
-    positionsArray = new Array(nDots);
+    positionsArray = [];
 
     // iterates through each tile on tilemap, checks if there is not a tile (or blocked location), and draws
     let count = 0;
-    for (let i = 1; i < map.width; i+=2) {
-        for (let j = 1; j < map.height; j+=2){
+    for (let i = 1; i < map.width; i++) {
+        for (let j = 1; j < map.height; j++){
             // checking if tile exists at centered position of current tile
             let centeredPosX = (i * tileSize) + (tileSize / 2); 
             let centeredPosY = (j * tileSize) + (tileSize / 2);
             let currentTile = map.getTileAt(i,j);
 
-            console.log(centeredPosX, centeredPosY);
-
             if (currentTile === null){
-                positionsArray[count] = [centeredPosX, centeredPosY];
-                count++;
+                positionsArray.push([centeredPosX, centeredPosY]);
             }
-
-            console.log(count);
         }
     }
 
