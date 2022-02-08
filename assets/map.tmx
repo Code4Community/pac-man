@@ -177,7 +177,6 @@
    </properties>
   </tile>
  </tileset>
- <tileset firstgid="49" source="../../../pacman-tilemap/Pacman.tsx"/>
  <layer id="2" name="Bottom Layer" width="28" height="31">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
