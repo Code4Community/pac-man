@@ -42,10 +42,10 @@ function preload ()
     this.load.image('dot', 'assets/dot.png');
     this.load.image('ghost-dot', 'assets/ghost-dot.png');
     this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
-    this.load.image('pink-ghost', 'assets/pink-ghost.png', { width: 5, height: 5 });
-    this.load.image('red-ghost', 'assets/red-ghost.png', { frameWidth: 32, frameHeight: 48 });
-    this.load.image('blue-ghost', 'assets/blue-ghost.png', { frameWidth: 32, frameHeight: 48 });
-    this.load.image('yellow-ghost', 'assets/yellow-ghost.png', { frameWidth: 32, frameHeight: 48 });
+    this.load.image('pink-ghost', 'assets/pink-ghost.webp', { frameWidth: 32, frameHeight: 48 });
+    this.load.image('red-ghost', 'assets/red-ghost.webp', { frameWidth: 32, frameHeight: 48 });
+    this.load.image('blue-ghost', 'assets/blue-ghost.webp', { frameWidth: 32, frameHeight: 48 });
+    this.load.image('yellow-ghost', 'assets/yellow-ghost.webp', { frameWidth: 32, frameHeight: 48 });
     this.load.image('vulnerable-ghost', 'assets/vulnerable-ghost.webp', { frameWidth: 32, frameHeight: 48 });
     this.load.spritesheet('pacman', 'assets/pacman.png', { frameWidth: 32, frameHeight: 32 });
 
@@ -65,11 +65,12 @@ function create ()
     // The player and its settings
     player = this.physics.add.sprite(spawnPoint.x, spawnPoint.y, 'pacman').setScale(.5);
     player.nextMove = null;
+    player.isPowerful = false;
 
-    let pinkGhost = this.physics.add.sprite(195, 230, 'pink-ghost').setScale(0.1);
-    let redGhost = this.physics.add.sprite(225, 230, 'red-ghost').setScale(0.025);
-    let blueGhost = this.physics.add.sprite(255, 230, 'blue-ghost').setScale(0.1);
-    let yellowGhost = this.physics.add.sprite(225, 185, 'yellow-ghost').setScale(0.1);
+    let pinkGhost = this.physics.add.sprite(195, 230, 'pink-ghost');
+    let redGhost = this.physics.add.sprite(225, 230, 'red-ghost');
+    let blueGhost = this.physics.add.sprite(255, 230, 'blue-ghost');
+    let yellowGhost = this.physics.add.sprite(225, 185, 'yellow-ghost');
 
     ghosts = this.physics.add.group();
     ghosts.add(pinkGhost);
@@ -78,7 +79,9 @@ function create ()
     ghosts.add(yellowGhost);
 
     this.physics.add.collider(player, worldLayer);
-    this.physics.add.collider(ghosts, worldLayer)
+    this.physics.add.collider(ghosts, worldLayer);
+
+    setGhostSize();
 
     //  Player physics properties. Give the little guy a slight bounce.
     player.setCollideWorldBounds(true);
@@ -118,7 +121,7 @@ function create ()
 
     //  EAT GHOST DOTS
     ghostDotsPositionsArray = [
-        [200, 70],
+        [200, 70]
     ];
 
     ghostDots = createGhostDots(this,ghostDotsPositionsArray);
@@ -232,53 +235,44 @@ function eatGhostDot (player, ghostDot)
 {
     ghostDot.disableBody(true, true);
 
-    // Change all ghost images to blue vulnerable ghost
-    ghosts.children.iterate((child) => {
-        child.setTexture('vulnerable-ghost').setScale(.07);
-    });
-
-    // Remove collider where player dies if it hits a ghost
-    this.physics.world.colliders.getActive().find(function(i){
-        return i.name == 'hit_ghost_collider'
-    }).destroy();
-
-    // Add collider where player can eat ghosts
-    this.physics.add.collider(player, ghosts, eatGhost, null, this);
-
     //  Add and update the score
     score += 50;
     scoreText.setText('Score: ' + score);
 
-    setTimeout(enableGhosts, 1000);
+    // Change all ghost images to blue vulnerable ghost
+    ghosts.children.iterate((child) => {
+        child.setTexture('vulnerable-ghost');
+    });
+    setGhostSize();
 
-    /*if (dots.countActive(true) === 0)
+    // Make player able to eat ghosts
+    player.isPowerful = true;
+
+    // Remake dots if they're all eaten
+    if ((dots.countActive(true) === 0) && ghostDots.countActive(true) === 0)
     {
-        //  Create new batch of dots to collect
         dots = createDots(this, positionsArray);
         ghostDots = createGhostDots(this, ghostDotsPositionsArray);
         this.physics.add.overlap(player, dots, eatDot, null, this);
         this.physics.add.overlap(player, ghostDots, eatGhostDot, null, this);
 
         var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
-    }*/
-}
+    }
 
-function eatGhost (player, ghost)
-{
-    ghost.disableBody(true, true);
-
-    //  Add and update the score
-    score += 50;
-    scoreText.setText('Score: ' + score);
+    setTimeout(enableGhosts, 4000);
 }
 
 function hitGhost (player, ghost)
 {
-    this.physics.pause();
+    if(player.isPowerful) {
+        ghost.disableBody(true, true);
+    } else {
+        this.physics.pause();
 
-    player.setTint(0xff0000);
-
-    gameOver = true;
+        player.setTint(0xff0000);
+    
+        gameOver = true;
+    }
 }
 
 function createDots (realThis, positions) {
@@ -302,18 +296,13 @@ function createGhostDots (realThis, positions) {
 }
 
 function enableGhosts() {
-    // Change all ghost images to blue vulnerable ghost
-    ghosts.children.iterate((child) => {
-        child.setTexture('pink-ghost');
-    });
+    getGhost('pink').setTexture('pink-ghost').setScale(1);
+    getGhost('red').setTexture('red-ghost').setScale(1);
+    getGhost('yellow').setTexture('yellow-ghost').setScale(1);
+    getGhost('blue').setTexture('blue-ghost').setScale(1);
+    setGhostSize();
 
-    // Remove collider where player can eat ghosts
-    this.physics.world.colliders.getActive().find(function(i){
-        return i.name == 'eat_ghost_collider'
-    }).destroy();
-
-    // Add collider where player can eat ghosts
-    this.physics.add.collider(player, ghosts, hitGhost, null, this);
+    player.isPowerful = false;
 }
 
 function move (sprite, speed) {
@@ -333,9 +322,22 @@ function isMoving(ghost)
     }
 }
 
+// Helper function to return a specific ghost
+function getGhost(color) {
+    const GHOSTS = ['pink', 'red', 'blue', 'yellow'];
+    for (let i = 0; i < GHOSTS.length; i++)
+        if (GHOSTS[i] == color) return ghosts.children.entries[i];
+}
+
 function distance(player, ghost)
 {
     return distanceBetween(player, ghost)
 }
 
-
+function setGhostSize()
+{
+    ghosts.children.entries.forEach(ghost => {
+        ghost.setSize(16,16);
+        ghost.setDisplaySize(16,16);
+    });
+}
