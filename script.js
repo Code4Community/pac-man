@@ -40,7 +40,7 @@ var worldLayer;
 
 var game = new Phaser.Game(config);
 
-const TILE_SIZE = 16
+const TILE_SIZE = 16;
 document.getElementById('start-over').addEventListener('click', () => {
     game.destroy(true);
     game = new Phaser.Game(config);
@@ -181,9 +181,11 @@ function processNextMove (sprite, speed, isGhost = false) {
         if (sprite.nextMove.sign * sprite.body.velocity[sprite.nextMove.dir] > 0) {
             if (sprite.nextMove.dir == 'x') {
                 sprite.setVelocityY(0);
+                sprite.y = Math.round(sprite.y);
                 if (!isGhost) sprite.setAngle(sprite.nextMove.sign == 1 ? 0 : 180);
             } else {
                 sprite.setVelocityX(0);
+                sprite.x = Math.round(sprite.x);
                 if (!isGhost) sprite.setAngle(sprite.nextMove.sign == 1 ? 90 : 270);
             }
             if (!isGhost) sprite.anims.play('chomp', true);
