@@ -2,11 +2,13 @@
 import Phaser from "phaser";
 import platform from './assets/platform.png'
 import dot from './assets/dot.png'
+import ghost_dot from './assets/ghost-dot.png'
 import dude from './assets/dude.png'
-import pink_ghost from './assets/pink-ghost.png'
-import red_ghost from './assets/red-ghost.png'
-import blue_ghost from './assets/blue-ghost.png'
-import yellow_ghost from './assets/yellow-ghost.png'
+import pink_ghost from './assets/pink-ghost.webp'
+import red_ghost from './assets/red-ghost.webp'
+import blue_ghost from './assets/blue-ghost.webp'
+import yellow_ghost from './assets/yellow-ghost.webp'
+import vulnerable_ghost from './assets/vulnerable-ghost.webp'
 import pacman from './assets/pacman.png'
 import tiles from './assets/tiles.png'
 import asset_map from './assets/map.json'
@@ -39,6 +41,7 @@ const GHOST_SPEED = 80;
 
 var player;
 var dots;
+var ghostDots;
 var ghosts;
 var platforms;
 var cursors;
@@ -53,7 +56,7 @@ var worldLayer;
 
 var game = new Phaser.Game(config);
 
-const TILE_SIZE = 16
+const TILE_SIZE = 16;
 document.getElementById('start-over').addEventListener('click', () => {
     game.destroy(true);
     game = new Phaser.Game(config);
@@ -68,6 +71,8 @@ function preload ()
     this.load.image('red-ghost', red_ghost, { frameWidth: 32, frameHeight: 32 });
     this.load.image('blue-ghost', blue_ghost, { frameWidth: 32, frameHeight: 32 });
     this.load.image('yellow-ghost', yellow_ghost, { frameWidth: 32, frameHeight: 32 });
+    this.load.image('ghost-dot', ghost_dot);
+    this.load.image('vulnerable-ghost', vulnerable_ghost, { frameWidth: 32, frameHeight: 48 });
     this.load.spritesheet('pacman', pacman, { frameWidth: 32, frameHeight: 32 });
 
     this.load.image('tiles', tiles);
@@ -86,11 +91,12 @@ function create ()
     // The player and its settings
     player = this.physics.add.sprite(spawnPoint.x, spawnPoint.y, 'pacman').setScale(.5);
     player.nextMove = null;
+    player.isPowerful = false;
 
-    let pinkGhost = this.physics.add.sprite(195, 230, 'pink-ghost').setScale(0.1);
-    let redGhost = this.physics.add.sprite(225, 230, 'red-ghost').setScale(0.025);
-    let blueGhost = this.physics.add.sprite(255, 230, 'blue-ghost').setScale(0.1);
-    let yellowGhost = this.physics.add.sprite(225, 185, 'yellow-ghost').setScale(0.1);
+    let pinkGhost = this.physics.add.sprite(195, 230, 'pink-ghost');
+    let redGhost = this.physics.add.sprite(225, 230, 'red-ghost');
+    let blueGhost = this.physics.add.sprite(255, 230, 'blue-ghost');
+    let yellowGhost = this.physics.add.sprite(225, 185, 'yellow-ghost');
 
     ghosts = this.physics.add.group();
     ghosts.add(pinkGhost);
@@ -109,10 +115,10 @@ function create ()
     this.physics.add.collider(player, worldLayer);
     this.physics.add.collider(ghosts, worldLayer);
 
-    
+    setGhostSize();
 
     //  Player physics properties. Give the little guy a slight bounce.
-    player.setCollideWorldBounds(true);
+    // player.setCollideWorldBounds(true); -> this does not allow pipes to work
 
     //  Our player animations, turning, walking left and walking right.
     this.anims.create({
@@ -131,7 +137,7 @@ function create ()
 
     // iterates through each tile on tilemap, checks if there is not a tile (or blocked location), and draws
     let count = 0;
-    for (let i = 1; i < map.width; i++) {
+    for (let i = 0; i < map.width; i++) {
         for (let j = 1; j < map.height; j++){
             // checking if tile exists at centered position of current tile
             let centeredPosX = (i * TILE_SIZE) + (TILE_SIZE / 2); 
@@ -146,6 +152,12 @@ function create ()
 
     dots = createDots(this,positionsArray);
 
+    //  EAT GHOST DOTS
+    var ghostDotsPositionsArray = [
+        [200, 70]
+    ];
+
+    ghostDots = createGhostDots(this,ghostDotsPositionsArray);
 
     //  The score
     scoreText = this.add.text(0, 510, 'Score: 0', { fontSize: '32px', fill: '#fff' });
@@ -153,8 +165,10 @@ function create ()
     //  Collide the player with the platforms
     this.physics.add.collider(player, platforms);
 
-    //  Checks to see if the player overlaps with any of the dots, if he does call the eatDot function
+    //  Checks to see if the player overlaps with any of the normal dots, if he does call the eatDot function
     this.physics.add.overlap(player, dots, eatDot, null, this);
+    //  Checks to see if the player overlaps with any of the eat-ghost powerup dots, if he does call the eatGhostDot function
+    this.physics.add.overlap(player, ghostDots, eatGhostDot, null, this);
     this.physics.add.collider(player, ghosts, hitGhost, null, this);
 
     // Set ghost sizes TODO ---------------------
@@ -177,15 +191,15 @@ function update () {
         moveDown(player);
     }
 
+    if(player.x > 450) {
+        player.setPosition(0,232);
+    } else if (player.x < -10) {
+        player.setPosition(440, 232);
+    }
+
     processNextMove(player, PLAYER_SPEED);
 
     ghosts.children.entries.forEach(ghost => processNextMove(ghost, GHOST_SPEED, true));
-
-    if(player.x > 440) {
-        player.setPosition(0,232);
-    } else if (player.x < 0) {
-        player.setPosition(440, 232);
-    }
 }
 
 function processNextMove (sprite, speed, isGhost = false) {
@@ -194,9 +208,11 @@ function processNextMove (sprite, speed, isGhost = false) {
         if (sprite.nextMove.sign * sprite.body.velocity[sprite.nextMove.dir] > 0) {
             if (sprite.nextMove.dir == 'x') {
                 sprite.setVelocityY(0);
+                sprite.y = Math.round(sprite.y);
                 if (!isGhost) sprite.setAngle(sprite.nextMove.sign == 1 ? 0 : 180);
             } else {
                 sprite.setVelocityX(0);
+                sprite.x = Math.round(sprite.x);
                 if (!isGhost) sprite.setAngle(sprite.nextMove.sign == 1 ? 90 : 270);
             }
             if (!isGhost) sprite.anims.play('chomp', true);
@@ -242,24 +258,59 @@ function eatDot (player, dot)
     score += 10;
     scoreText.setText('Score: ' + score);
 
-    if (dots.countActive(true) === 0)
+    if ((dots.countActive(true) === 0) && ghostDots.countActive(true) === 0)
     {
-        //  Create new batch of dots to collect
         dots = createDots(this, positionsArray);
+        ghostDots = createGhostDots(this, ghostDotsPositionsArray);
         this.physics.add.overlap(player, dots, eatDot, null, this);
+        this.physics.add.overlap(player, ghostDots, eatGhostDot, null, this);
 
         var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
-
     }
+}
+
+function eatGhostDot (player, ghostDot)
+{
+    ghostDot.disableBody(true, true);
+
+    //  Add and update the score
+    score += 50;
+    scoreText.setText('Score: ' + score);
+
+    // Change all ghost images to blue vulnerable ghost
+    ghosts.children.iterate((child) => {
+        child.setTexture('vulnerable-ghost');
+    });
+    setGhostSize();
+
+    // Make player able to eat ghosts
+    player.isPowerful = true;
+
+    // Remake dots if they're all eaten
+    if ((dots.countActive(true) === 0) && ghostDots.countActive(true) === 0)
+    {
+        dots = createDots(this, positionsArray);
+        ghostDots = createGhostDots(this, ghostDotsPositionsArray);
+        this.physics.add.overlap(player, dots, eatDot, null, this);
+        this.physics.add.overlap(player, ghostDots, eatGhostDot, null, this);
+
+        var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+    }
+
+    setTimeout(enableGhosts, 4000);
 }
 
 function hitGhost (player, ghost)
 {
-    this.physics.pause();
+    if(player.isPowerful) {
+        ghost.disableBody(true, true);
+    } else {
+        this.physics.pause();
 
-    player.setTint(0xff0000);
-
-    gameOver = true;
+        player.setTint(0xff0000);
+    
+        gameOver = true;
+    }
 }
 
 function createDots (realThis, positions) {
@@ -269,10 +320,28 @@ function createDots (realThis, positions) {
         let newDot = realThis.physics.add.sprite(positions[i][0],positions[i][1], 'dot');
         dots.add(newDot);
     }
-    
     return dots;
 }
 
+function createGhostDots (realThis, positions) {
+    let ghostDots = realThis.physics.add.group();
+    
+    for(let i = 0; i<positions.length; i++) {
+        let newDot = realThis.physics.add.sprite(positions[i][0],positions[i][1], 'ghost-dot').setScale(0.02);
+        ghostDots.add(newDot);
+    }
+    return ghostDots;
+}
+
+function enableGhosts() {
+    getGhost('pink').setTexture('pink-ghost').setScale(1);
+    getGhost('red').setTexture('red-ghost').setScale(1);
+    getGhost('yellow').setTexture('yellow-ghost').setScale(1);
+    getGhost('blue').setTexture('blue-ghost').setScale(1);
+    setGhostSize();
+
+    player.isPowerful = false;
+}
 
 function move (sprite, speed) {
     if (sprite.nextMove.dir == 'x')
@@ -291,23 +360,14 @@ function isMoving(ghost)
     }
 }
 
-
-
-
-
-
 // Ghost functions:
-
 
 // Helper function to return a specific ghost
 function getGhost(color) {
     return ghosts.children.entries.find(ghost=>ghost.color == color);
 }
 
-
-
 // move(pink, left)
- 
 function moveGhost(color, direction) {
     switch (direction) {
         case 'up':
@@ -325,9 +385,15 @@ function moveGhost(color, direction) {
     }
 }
 
+function setGhostSize()
+{
+    ghosts.children.entries.forEach(ghost => {
+        ghost.setSize(16,16);
+        ghost.setDisplaySize(16,16);
+    });
+}
 
 // isEatingGhosts()
-
 function scaryPacMan() {
     return /*SOMETHING*/;
 }
@@ -363,9 +429,7 @@ function direction (color, offset = 0) {
         return 'up';
 }
 
-
 // pickRandomDirection()
-
 function pickRandomDirection () {
     return DIRECTIONS[Math.floor(Math.random() * DIRECTIONS.length)];
 }

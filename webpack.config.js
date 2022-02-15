@@ -42,7 +42,7 @@ const config = {
                 use: [stylesHandler, 'css-loader', 'postcss-loader'],
             },
             {
-                test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif|tmx|json)$/i,
+                test: /\.(eot|svg|ttf|woff|woff2|png|jpg|gif|webp|json)$/i,
                 type: 'asset/resource',
             },
 
