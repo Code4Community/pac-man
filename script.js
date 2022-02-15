@@ -103,7 +103,7 @@ function create ()
     setGhostSize();
 
     //  Player physics properties. Give the little guy a slight bounce.
-    player.setCollideWorldBounds(true);
+    // player.setCollideWorldBounds(true); -> this does not allow pipes to work
 
     //  Our player animations, turning, walking left and walking right.
     this.anims.create({
@@ -122,7 +122,7 @@ function create ()
 
     // iterates through each tile on tilemap, checks if there is not a tile (or blocked location), and draws
     let count = 0;
-    for (let i = 1; i < map.width; i++) {
+    for (let i = 0; i < map.width; i++) {
         for (let j = 1; j < map.height; j++){
             // checking if tile exists at centered position of current tile
             let centeredPosX = (i * TILE_SIZE) + (TILE_SIZE / 2); 
@@ -176,15 +176,15 @@ function update () {
         moveDown(player);
     }
 
+    if(player.x > 450) {
+        player.setPosition(0,232);
+    } else if (player.x < -10) {
+        player.setPosition(440, 232);
+    }
+
     processNextMove(player, PLAYER_SPEED);
 
     ghosts.children.entries.forEach(ghost => processNextMove(ghost, GHOST_SPEED, true));
-
-    if(player.x > 440) {
-        player.setPosition(0,232);
-    } else if (player.x < 0) {
-        player.setPosition(440, 232);
-    }
 }
 
 function processNextMove (sprite, speed, isGhost = false) {
