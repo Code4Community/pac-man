@@ -1,7 +1,12 @@
+// Constant for directions string and ghost colors
+const DIRECTIONS = ['up', 'right', 'down', 'left'];
+const GHOSTS = ['pink', 'red', 'blue', 'yellow'];
+
 var config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    parent: 'game',
+    width: 450,
+    height: 550,
     physics: {
         default: 'arcade',
         arcade: {
@@ -17,7 +22,7 @@ var config = {
 };
 
 const PLAYER_SPEED = 160;
-const GHOST_SPEED = 2;
+const GHOST_SPEED = 80;
 
 var player;
 var dots;
@@ -35,6 +40,12 @@ var tileset;
 var worldLayer;
 
 var game = new Phaser.Game(config);
+
+const TILE_SIZE = 16
+document.getElementById('start-over').addEventListener('click', () => {
+    game.destroy(true);
+    game = new Phaser.Game(config);
+});
 
 function preload ()
 {
@@ -78,6 +89,14 @@ function create ()
     ghosts.add(blueGhost);
     ghosts.add(yellowGhost);
 
+    {
+        let i = 0;
+        ghosts.children.entries.forEach(ghost => ghost.color = GHOSTS[i++]);
+    }
+
+    
+    
+
     this.physics.add.collider(player, worldLayer);
     this.physics.add.collider(ghosts, worldLayer);
 
@@ -98,25 +117,24 @@ function create ()
     cursors = this.input.keyboard.createCursorKeys();
 
     //  DOTS
-    //  The dots are 4 by 4, evenly spaced 20 pixels apart in the x or y direction
-    positionsArray = [
-        [105, 170],
-        [105, 150],
-        [105, 130],
-        [105, 110],
-        [105, 90],
+    //  The dots are 4 by 4. One is placed per tile in tilemap. Tiles are 16px, dots are placed in the center of tile
+    positionsArray = [];
 
-        [120, 90],
-        [140, 90],
-        [160, 90],
-        [180, 90],
-        [200, 90],
+    // iterates through each tile on tilemap, checks if there is not a tile (or blocked location), and draws
+    let count = 0;
+    for (let i = 1; i < map.width; i++) {
+        for (let j = 1; j < map.height; j++){
+            // checking if tile exists at centered position of current tile
+            let centeredPosX = (i * TILE_SIZE) + (TILE_SIZE / 2); 
+            let centeredPosY = (j * TILE_SIZE) + (TILE_SIZE / 2);
+            let currentTile = map.getTileAt(i,j);
 
-        //[200, 70],
-        [200, 50],
-        [200, 30],
+            if (currentTile === null){
+                positionsArray.push([centeredPosX, centeredPosY]);
+            }
+        }
+    }
 
-    ];
     dots = createDots(this,positionsArray);
 
     //  EAT GHOST DOTS
@@ -127,7 +145,7 @@ function create ()
     ghostDots = createGhostDots(this,ghostDotsPositionsArray);
 
     //  The score
-    scoreText = this.add.text(16, 16, 'Score: 0', { fontSize: '32px', fill: '#fff' });
+    scoreText = this.add.text(0, 510, 'Score: 0', { fontSize: '32px', fill: '#fff' });
 
     //  Collide the player with the platforms
     this.physics.add.collider(player, platforms);
@@ -136,7 +154,9 @@ function create ()
     this.physics.add.overlap(player, dots, eatDot, null, this);
     //  Checks to see if the player overlaps with any of the eat-ghost powerup dots, if he does call the eatGhostDot function
     this.physics.add.overlap(player, ghostDots, eatGhostDot, null, this);
-    this.physics.add.collider(player, ghosts, hitGhost, null, this).name = 'hit_ghost_collider';
+    this.physics.add.collider(player, ghosts, hitGhost, null, this);
+
+    // Set ghost sizes TODO ---------------------
 }
 
 function update () {
@@ -157,7 +177,8 @@ function update () {
     }
 
     processNextMove(player, PLAYER_SPEED);
-    
+
+    ghosts.children.entries.forEach(ghost => processNextMove(ghost, GHOST_SPEED, true));
 
     if(player.x > 440) {
         player.setPosition(0,232);
@@ -166,18 +187,18 @@ function update () {
     }
 }
 
-function processNextMove (sprite, speed) {
+function processNextMove (sprite, speed, isGhost = false) {
     if (sprite.nextMove) {
         
         if (sprite.nextMove.sign * sprite.body.velocity[sprite.nextMove.dir] > 0) {
             if (sprite.nextMove.dir == 'x') {
                 sprite.setVelocityY(0);
-                sprite.setAngle(sprite.nextMove.sign == 1 ? 0 : 180);
+                if (!isGhost) sprite.setAngle(sprite.nextMove.sign == 1 ? 0 : 180);
             } else {
                 sprite.setVelocityX(0);
-                sprite.setAngle(sprite.nextMove.sign == 1 ? 90 : 270);
+                if (!isGhost) sprite.setAngle(sprite.nextMove.sign == 1 ? 90 : 270);
             }
-            sprite.anims.play('chomp', true);
+            if (!isGhost) sprite.anims.play('chomp', true);
             
             sprite.nextMove = null;
         } else {
@@ -322,16 +343,29 @@ function isMoving(ghost)
     }
 }
 
+// Ghost functions:
+
 // Helper function to return a specific ghost
 function getGhost(color) {
-    const GHOSTS = ['pink', 'red', 'blue', 'yellow'];
-    for (let i = 0; i < GHOSTS.length; i++)
-        if (GHOSTS[i] == color) return ghosts.children.entries[i];
+    return ghosts.children.entries.find(ghost=>ghost.color == color);
 }
 
-function distance(player, ghost)
-{
-    return distanceBetween(player, ghost)
+// move(pink, left)
+function moveGhost(color, direction) {
+    switch (direction) {
+        case 'up':
+            moveUp(getGhost(color));
+            break;
+        case 'right':
+            moveRight(getGhost(color));
+            break;
+        case 'down':
+            moveDown(getGhost(color));
+            break;
+        case 'left':
+            moveLeft(getGhost(color));
+            break;
+    }
 }
 
 function setGhostSize()
@@ -340,4 +374,45 @@ function setGhostSize()
         ghost.setSize(16,16);
         ghost.setDisplaySize(16,16);
     });
+}
+
+// isEatingGhosts()
+function scaryPacMan() {
+    return /*SOMETHING*/;
+}
+
+// distance(pink)
+function distance (color) {
+    let xDist = player.body.position.x - getGhost(color).body.position.x;
+    let yDist = player.body.position.y - getGhost(color).body.position.y;
+    let totalDist = Math.pow(xDist, 2) + Math.pow(yDist, 2);
+    return Math.sqrt(totalDist);
+}
+
+// direction()
+// Gets the direction between the ghost of the given color and pac man
+// Offset figues out how much to offset the axes
+// For example, offset 0 will show the direction straight towards pacman, and offset 180 will return the direction away from pac man
+// 90 degrees will be orthogonal in either direction
+function direction (color, offset = 0) {
+    let ghost = getGhost(color);
+    let dists = [player.body.position.x - ghost.body.position.x, player.body.position.y - ghost.body.position.y];
+    let angle = Math.atan2(dists[1],dists[0]) * 180 / Math.PI;
+    angle += offset;
+    if (angle > 180) angle -= 360;
+    else if (angle < -180) angle += 360;
+    // Check directions
+    if (angle > -45 && angle <= 45)
+        return 'right';
+    else if (angle > 45 && angle <= 135)
+        return 'down';
+    else if (angle > 135 || angle < -135)
+        return 'left';
+    else
+        return 'up';
+}
+
+// pickRandomDirection()
+function pickRandomDirection () {
+    return DIRECTIONS[Math.floor(Math.random() * DIRECTIONS.length)];
 }
