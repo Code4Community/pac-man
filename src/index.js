@@ -1,4 +1,17 @@
 // Constant for directions string and ghost colors
+import Phaser from "phaser";
+import platform from './assets/platform.png'
+import dot from './assets/dot.png'
+import dude from './assets/dude.png'
+import pink_ghost from './assets/pink-ghost.png'
+import red_ghost from './assets/red-ghost.png'
+import blue_ghost from './assets/blue-ghost.png'
+import yellow_ghost from './assets/yellow-ghost.png'
+import pacman from './assets/pacman.png'
+import tiles from './assets/tiles.png'
+import asset_map from './assets/map.json'
+
+
 const DIRECTIONS = ['up', 'right', 'down', 'left'];
 const GHOSTS = ['pink', 'red', 'blue', 'yellow'];
 
@@ -48,17 +61,17 @@ document.getElementById('start-over').addEventListener('click', () => {
 
 function preload ()
 {
-    this.load.image('ground', 'assets/platform.png');
-    this.load.image('dot', 'assets/dot.png');
-    this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
-    this.load.image('pink-ghost', 'assets/pink-ghost.png', { frameWidth: 32, frameHeight: 32 });
-    this.load.image('red-ghost', 'assets/red-ghost.png', { frameWidth: 32, frameHeight: 32 });
-    this.load.image('blue-ghost', 'assets/blue-ghost.png', { frameWidth: 32, frameHeight: 32 });
-    this.load.image('yellow-ghost', 'assets/yellow-ghost.png', { frameWidth: 32, frameHeight: 32 });
-    this.load.spritesheet('pacman', 'assets/pacman.png', { frameWidth: 32, frameHeight: 32 });
+    this.load.image('ground', platform);
+    this.load.image('dot', dot);
+    this.load.spritesheet('dude', dude, { frameWidth: 32, frameHeight: 48 });
+    this.load.image('pink-ghost', pink_ghost, { frameWidth: 32, frameHeight: 32 });
+    this.load.image('red-ghost', red_ghost, { frameWidth: 32, frameHeight: 32 });
+    this.load.image('blue-ghost', blue_ghost, { frameWidth: 32, frameHeight: 32 });
+    this.load.image('yellow-ghost', yellow_ghost, { frameWidth: 32, frameHeight: 32 });
+    this.load.spritesheet('pacman', pacman, { frameWidth: 32, frameHeight: 32 });
 
-    this.load.image('tiles', 'assets/tiles.png');
-    this.load.tilemapTiledJSON('map', 'assets/map.json');
+    this.load.image('tiles', tiles);
+    this.load.tilemapTiledJSON('map', asset_map);
 }
 
 function create ()
