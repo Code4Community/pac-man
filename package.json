@@ -1,13 +1,15 @@
 {
-  "name": "my-webpack-project",
+  "name": "pac-man",
   "version": "1.0.0",
-  "description": "My webpack project",
+  "description": "This is a Pac-Man clone made using Phaser.",
   "main": "src/index.js",
   "scripts": {
     "build:dev": "webpack --mode=development",
     "build:prod": "webpack --mode=production --node-env=production",
     "watch": "webpack --watch",
-    "serve": "webpack serve"
+    "serve": "webpack serve",
+    "predeploy": "npm run build:prod",
+    "deploy": "gh-pages -d dist"
   },
   "repository": {
     "type": "git",
@@ -15,11 +17,11 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/Code4Community/pac-man/issues"
   },
-  "homepage": "https://github.com/Code4Community/pac-man#readme",
+  "homepage": "https://code4community.github.io/pac-man/",
   "devDependencies": {
     "@babel/core": "^7.17.2",
     "@babel/preset-env": "^7.16.11",
@@ -28,6 +30,7 @@
     "babel-loader": "^8.2.3",
     "clean-webpack-plugin": "^4.0.0",
     "css-loader": "^6.6.0",
+    "gh-pages": "^3.2.3",
     "html-webpack-plugin": "^5.5.0",
     "path": "^0.12.7",
     "postcss": "^8.4.6",
