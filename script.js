@@ -52,7 +52,6 @@ function preload ()
     this.load.image('ground', 'assets/platform.png');
     this.load.image('dot', 'assets/dot.png');
     this.load.image('ghost-dot', 'assets/ghost-dot.png');
-    this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
     this.load.image('pink-ghost', 'assets/pink-ghost.webp', { frameWidth: 32, frameHeight: 48 });
     this.load.image('red-ghost', 'assets/red-ghost.webp', { frameWidth: 32, frameHeight: 48 });
     this.load.image('blue-ghost', 'assets/blue-ghost.webp', { frameWidth: 32, frameHeight: 48 });
