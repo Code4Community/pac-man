@@ -1,3 +1,16 @@
+import Phaser from "phaser";
+import platform from './assets/platform.png'
+import dot from './assets/dot.png'
+import ghost_dot from './assets/ghost-dot.png'
+import pink_ghost from './assets/pink-ghost.webp'
+import red_ghost from './assets/red-ghost.webp'
+import blue_ghost from './assets/blue-ghost.webp'
+import yellow_ghost from './assets/yellow-ghost.webp'
+import vulnerable_ghost from './assets/vulnerable-ghost.webp'
+import pacman from './assets/pacman.png'
+import tiles from './assets/tiles.png'
+import tile_map from './assets/map.json'
+
 // Constant for directions string and ghost colors
 const DIRECTIONS = ['up', 'right', 'down', 'left'];
 const GHOSTS = ['pink', 'red', 'blue', 'yellow'];
@@ -49,18 +62,18 @@ document.getElementById('start-over').addEventListener('click', () => {
 
 function preload ()
 {
-    this.load.image('ground', 'assets/platform.png');
-    this.load.image('dot', 'assets/dot.png');
-    this.load.image('ghost-dot', 'assets/ghost-dot.png');
-    this.load.image('pink-ghost', 'assets/pink-ghost.webp', { frameWidth: 32, frameHeight: 48 });
-    this.load.image('red-ghost', 'assets/red-ghost.webp', { frameWidth: 32, frameHeight: 48 });
-    this.load.image('blue-ghost', 'assets/blue-ghost.webp', { frameWidth: 32, frameHeight: 48 });
-    this.load.image('yellow-ghost', 'assets/yellow-ghost.webp', { frameWidth: 32, frameHeight: 48 });
-    this.load.image('vulnerable-ghost', 'assets/vulnerable-ghost.webp', { frameWidth: 32, frameHeight: 48 });
-    this.load.spritesheet('pacman', 'assets/pacman.png', { frameWidth: 32, frameHeight: 32 });
+    this.load.image('ground', platform);
+    this.load.image('dot', dot);
+    this.load.image('ghost-dot', ghost_dot);
+    this.load.image('pink-ghost', pink_ghost, { frameWidth: 32, frameHeight: 48 });
+    this.load.image('red-ghost', red_ghost, { frameWidth: 32, frameHeight: 48 });
+    this.load.image('blue-ghost', blue_ghost, { frameWidth: 32, frameHeight: 48 });
+    this.load.image('yellow-ghost', yellow_ghost, { frameWidth: 32, frameHeight: 48 });
+    this.load.image('vulnerable-ghost', vulnerable_ghost, { frameWidth: 32, frameHeight: 48 });
+    this.load.spritesheet('pacman', pacman, { frameWidth: 32, frameHeight: 32 });
 
-    this.load.image('tiles', 'assets/tiles.png');
-    this.load.tilemapTiledJSON('map', 'assets/map.json');
+    this.load.image('tiles', tiles);
+    this.load.tilemapTiledJSON('map', tile_map);
 }
 
 function create ()
@@ -137,7 +150,7 @@ function create ()
     dots = createDots(this,positionsArray);
 
     //  EAT GHOST DOTS
-    ghostDotsPositionsArray = [
+    var ghostDotsPositionsArray = [
         [200, 70]
     ];
 
