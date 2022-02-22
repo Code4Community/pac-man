@@ -168,7 +168,11 @@ function create ()
     this.physics.add.overlap(player, ghostDots, eatGhostDot, null, this);
     this.physics.add.collider(player, ghosts, hitGhost, null, this);
 
-    // Set ghost sizes TODO ---------------------
+    const isProduction = process.env.NODE_ENV == 'production';
+    if (!isProduction) {
+        window.player = player;
+        window.ghosts = ghosts;
+    }
 }
 
 function update () {
