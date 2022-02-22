@@ -186,16 +186,17 @@ function update () {
     }
     else if (cursors.down.isDown) {
         moveDown(player);
-    }
+    } 
+    
 
     if(player.x > 450) {
         player.setPosition(0,232);
     } else if (player.x < -10) {
         player.setPosition(440, 232);
     }
-
+    player.x = Math.round(player.x);
+    player.y = Math.round(player.y);
     processNextMove(player, PLAYER_SPEED);
-
     ghosts.children.entries.forEach(ghost => processNextMove(ghost, GHOST_SPEED, true));
 }
 
