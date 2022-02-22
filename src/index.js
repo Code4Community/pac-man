@@ -57,6 +57,8 @@ var game = new Phaser.Game(config);
 const TILE_SIZE = 16;
 document.getElementById('start-over').addEventListener('click', () => {
     game.destroy(true);
+    score = 0;
+    gameOver = false;
     game = new Phaser.Game(config);
 });
 
