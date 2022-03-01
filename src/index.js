@@ -168,7 +168,7 @@ function create ()
 
     //  EAT GHOST DOTS
     var ghostDotsPositionsArray = [
-        [200, 70]
+        [25, 40],[25, 380],[425,40],[425,380]
     ];
 
     ghostDots = createGhostDots(this,ghostDotsPositionsArray);
