@@ -22,21 +22,21 @@
 
     <br>
 
-    <div id="container">
-        <div style="display: grid; grid-template-columns: 1fr 1fr;">
+    <div class="container">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
             <div class="text-center">
-                <p><b>Goal</b></p>
-                <p>Beat Pac-Man by writing code to control the ghosts!</p>
-                <p><b>Instructions</b></p>
-                <p>Use the code editor below to tell the ghosts how to move.</p>
-                <p><b>Code editor</b></p>
-                <!-- TODO: insert code editor here -->
-                <div>
+                <p><b>Goal:</b> Beat Pac-Man by writing code to control the ghosts!</p>
+                <p><b>Instructions:</b> Use the code editor below to tell the ghosts how to move.</p>
+                <div id="game"></div>
+            </div>
+            <div>
+                <p class="text-center"><b>Code editor</b></p>
+                <div id="code-editor" class="border border-dark"></div>
+                <div class="text-center mt-4">
                     <p><b>Controls</b></p>
                     <button id="start-over" type="button" class="btn btn-primary">Start Over</button>
                 </div>
             </div>
-            <div id="game"></div>
         </div>
     </div>
 </body>

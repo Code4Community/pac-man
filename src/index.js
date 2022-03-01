@@ -1,4 +1,6 @@
 import Phaser from "phaser";
+import C4C from 'c4c-editor-and-interpreter';
+
 import platform from './assets/platform.png'
 import dot from './assets/dot.png'
 import ghost_dot from './assets/ghost-dot.png'
@@ -61,6 +63,19 @@ document.getElementById('start-over').addEventListener('click', () => {
     gameOver = false;
     game = new Phaser.Game(config);
 });
+
+const codeEditor = document.getElementById('code-editor');
+const theme = {
+    "&": {
+        color: "black",
+        backgroundColor: "white",
+    },
+    ".cm-content, .cm-gutter": {
+        minHeight: "500px",
+    }
+};
+
+C4C.Editor.create(codeEditor, theme);
 
 function preload ()
 {

@@ -43,6 +43,7 @@
         "webpack-merge": "^5.8.0"
     },
     "dependencies": {
+        "c4c-editor-and-interpreter": "github:code4community/code-editor-and-interpreter",
         "phaser": "^3.55.2"
     }
 }
