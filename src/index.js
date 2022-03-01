@@ -106,9 +106,6 @@ function create ()
         ghosts.children.entries.forEach(ghost => ghost.color = GHOSTS[i++]);
     }
 
-    
-    
-
     this.physics.add.collider(player, worldLayer);
     this.physics.add.collider(ghosts, worldLayer);
 
@@ -134,8 +131,8 @@ function create ()
 
     // iterates through each tile on tilemap, checks if there is not a tile (or blocked location), and draws
     let count = 0;
-    for (let i = 0; i < map.width; i++) {
-        for (let j = 1; j < map.height; j++){
+    for (let i = 1; i < map.width - 1; i++) {
+        for (let j = 1; j < map.height -1; j++){
             // checking if tile exists at centered position of current tile
             let centeredPosX = (i * TILE_SIZE) + (TILE_SIZE / 2); 
             let centeredPosY = (j * TILE_SIZE) + (TILE_SIZE / 2);
@@ -194,10 +191,41 @@ function update () {
     } else if (player.x < -10) {
         player.setPosition(440, 232);
     }
-    player.x = Math.round(player.x);
-    player.y = Math.round(player.y);
+
+    if (player.nextMove) {
+        pipeBoundsCheck(player)
+    }
+
     processNextMove(player, PLAYER_SPEED);
     ghosts.children.entries.forEach(ghost => processNextMove(ghost, GHOST_SPEED, true));
+}
+
+function pipeBoundsCheck(player){
+    let direction = player.nextMove.dir
+    let sign = player.nextMove.sign
+    let tile;
+
+    // get the current tile of the player
+    let tileX = (Math.round(player.x) % map.width);
+    let tileY = (Math.round(player.y) % map.height);
+
+    console.log(map.getTileAt(tileX, tileY))
+
+    /* get the tile that pacman wants to enter */
+    if (direction == 'x'){
+        if (sign == 1){
+            tile = map.getTileAt(tileX + 1, tileY)
+        } else if (sign == -1){
+            map.getTileAt(tileX - 1, tileY)
+        }
+        
+    } else if (direction == 'y'){
+        if (sign == 1){
+            map.getTileAt(tileX, tileY + 1)
+        } else if (sign == -1){
+            map.getTileAt(tileX + 1, tileY - 1)
+        }
+    }
 }
 
 function processNextMove (sprite, speed, isGhost = false) {
@@ -218,7 +246,6 @@ function processNextMove (sprite, speed, isGhost = false) {
             sprite.nextMove = null;
         } else {
             move(sprite, speed);
-
         }
     }
 }
