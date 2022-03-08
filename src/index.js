@@ -10,6 +10,7 @@ import vulnerable_ghost from './assets/vulnerable-ghost.webp'
 import pacman from './assets/pacman.png'
 import tiles from './assets/tiles.png'
 import tile_map from './assets/map.json'
+import munch_mp3 from './assets/waka-waka-munch-short.mp3'
 
 // Constant for directions string and ghost colors
 const DIRECTIONS = ['up', 'right', 'down', 'left'];
@@ -34,7 +35,7 @@ var config = {
     }
 };
 
-const PLAYER_SPEED = 160;
+const PLAYER_SPEED = 80;
 const GHOST_SPEED = 80;
 
 var player;
@@ -51,6 +52,8 @@ var positionsArray;
 var map;
 var tileset;
 var worldLayer;
+
+var munch;
 
 var game = new Phaser.Game(config);
 
@@ -72,6 +75,8 @@ function preload ()
     this.load.image('vulnerable-ghost', vulnerable_ghost, { frameWidth: 32, frameHeight: 48 });
     this.load.spritesheet('pacman', pacman, { frameWidth: 32, frameHeight: 32 });
 
+    this.load.audio('munch', munch_mp3);
+
     this.load.image('tiles', tiles);
     this.load.tilemapTiledJSON('map', tile_map);
 }
@@ -82,6 +87,8 @@ function create ()
     tileset = map.addTilesetImage("blueTiles", 'tiles');
     worldLayer = map.createStaticLayer('Tile Layer 1', tileset);
     worldLayer.setCollisionByExclusion(-1, true);
+
+    munch = this.sound.add('munch');
 
     const spawnPoint = map.findObject("Objects", obj => obj.name === "Spawn Point 1");
 
@@ -111,6 +118,7 @@ function create ()
 
     this.physics.add.collider(player, worldLayer);
     this.physics.add.collider(ghosts, worldLayer);
+    this.physics.add.collider(player, dots);
 
     setGhostSize();
 
@@ -254,6 +262,9 @@ function eatDot (player, dot)
     //  Add and update the score
     score += 10;
     scoreText.setText('Score: ' + score);
+
+    // munch sound plays
+    munch.play({rate: 1.3});
 
     if ((dots.countActive(true) === 0) && ghostDots.countActive(true) === 0)
     {
