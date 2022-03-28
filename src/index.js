@@ -197,6 +197,8 @@ function update () {
     }
 
     processNextMove(player, PLAYER_SPEED);
+    player.x = Math.round(player.x);
+    player.y = Math.round(player.y);
     ghosts.children.entries.forEach(ghost => processNextMove(ghost, GHOST_SPEED, true));
 }
 
@@ -235,15 +237,17 @@ function processNextMove (sprite, speed, isGhost = false) {
             if (sprite.nextMove.dir == 'x') {
                 sprite.setVelocityY(0);
                 sprite.y = Math.round(sprite.y);
+                sprite.setVelocityX(speed * sprite.nextMove.sign);
                 if (!isGhost) sprite.setAngle(sprite.nextMove.sign == 1 ? 0 : 180);
             } else {
                 sprite.setVelocityX(0);
+                sprite.setVelocityY(speed * sprite.nextMove.sign);
                 sprite.x = Math.round(sprite.x);
                 if (!isGhost) sprite.setAngle(sprite.nextMove.sign == 1 ? 90 : 270);
             }
             if (!isGhost) sprite.anims.play('chomp', true);
             
-            sprite.nextMove = null;
+            
         } else {
             move(sprite, speed);
         }
