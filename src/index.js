@@ -1,4 +1,6 @@
 import Phaser from "phaser";
+import C4C from 'c4c-editor-and-interpreter';
+
 import platform from './assets/platform.png'
 import dot from './assets/dot.png'
 import ghost_dot from './assets/ghost-dot.png'
@@ -10,6 +12,7 @@ import vulnerable_ghost from './assets/vulnerable-ghost.webp'
 import pacman from './assets/pacman.png'
 import tiles from './assets/tiles.png'
 import tile_map from './assets/map.json'
+import munch_mp3 from './assets/waka-waka-munch-short.mp3'
 
 // Constant for directions string and ghost colors
 const DIRECTIONS = ['up', 'right', 'down', 'left'];
@@ -34,7 +37,7 @@ var config = {
     }
 };
 
-const PLAYER_SPEED = 160;
+const PLAYER_SPEED = 80;
 const GHOST_SPEED = 80;
 
 var player;
@@ -52,13 +55,30 @@ var map;
 var tileset;
 var worldLayer;
 
+var munch;
+
 var game = new Phaser.Game(config);
 
 const TILE_SIZE = 16;
 document.getElementById('start-over').addEventListener('click', () => {
     game.destroy(true);
+    score = 0;
+    gameOver = false;
     game = new Phaser.Game(config);
 });
+
+const codeEditor = document.getElementById('code-editor');
+const theme = {
+    "&": {
+        color: "black",
+        backgroundColor: "white",
+    },
+    ".cm-content, .cm-gutter": {
+        minHeight: "500px",
+    }
+};
+
+C4C.Editor.create(codeEditor, theme);
 
 function preload ()
 {
@@ -72,6 +92,8 @@ function preload ()
     this.load.image('vulnerable-ghost', vulnerable_ghost, { frameWidth: 32, frameHeight: 48 });
     this.load.spritesheet('pacman', pacman, { frameWidth: 32, frameHeight: 32 });
 
+    this.load.audio('munch', munch_mp3);
+
     this.load.image('tiles', tiles);
     this.load.tilemapTiledJSON('map', tile_map);
 }
@@ -82,6 +104,8 @@ function create ()
     tileset = map.addTilesetImage("blueTiles", 'tiles');
     worldLayer = map.createStaticLayer('Tile Layer 1', tileset);
     worldLayer.setCollisionByExclusion(-1, true);
+
+    munch = this.sound.add('munch');
 
     const spawnPoint = map.findObject("Objects", obj => obj.name === "Spawn Point 1");
 
@@ -108,6 +132,7 @@ function create ()
 
     this.physics.add.collider(player, worldLayer);
     this.physics.add.collider(ghosts, worldLayer);
+    this.physics.add.collider(player, dots);
 
     setGhostSize();
 
@@ -148,7 +173,7 @@ function create ()
 
     //  EAT GHOST DOTS
     var ghostDotsPositionsArray = [
-        [200, 70]
+        [25, 40],[25, 380],[425,40],[425,380]
     ];
 
     ghostDots = createGhostDots(this,ghostDotsPositionsArray);
@@ -165,7 +190,11 @@ function create ()
     this.physics.add.overlap(player, ghostDots, eatGhostDot, null, this);
     this.physics.add.collider(player, ghosts, hitGhost, null, this);
 
-    // Set ghost sizes TODO ---------------------
+    const isProduction = process.env.NODE_ENV == 'production';
+    if (!isProduction) {
+        window.player = player;
+        window.ghosts = ghosts;
+    }
 }
 
 function update () {
@@ -286,6 +315,9 @@ function eatDot (player, dot)
     //  Add and update the score
     score += 10;
     scoreText.setText('Score: ' + score);
+
+    // munch sound plays
+    munch.play();
 
     if ((dots.countActive(true) === 0) && ghostDots.countActive(true) === 0)
     {
