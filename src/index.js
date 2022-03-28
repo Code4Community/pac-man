@@ -264,7 +264,7 @@ function eatDot (player, dot)
     scoreText.setText('Score: ' + score);
 
     // munch sound plays
-    munch.play({rate: 1.3});
+    munch.play();
 
     if ((dots.countActive(true) === 0) && ghostDots.countActive(true) === 0)
     {
