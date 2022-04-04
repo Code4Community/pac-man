@@ -60,11 +60,18 @@ var munch;
 var game = new Phaser.Game(config);
 
 const TILE_SIZE = 16;
+
 document.getElementById('start-over').addEventListener('click', () => {
     game.destroy(true);
     score = 0;
     gameOver = false;
     game = new Phaser.Game(config);
+});
+
+document.getElementById('submit').addEventListener('click', () => {
+    const programText = C4C.Editor.getText();
+    C4C.Interpreter.run(programText);
+    console.log(programText)
 });
 
 const codeEditor = document.getElementById('code-editor');
@@ -129,8 +136,6 @@ function create ()
         let i = 0;
         ghosts.children.entries.forEach(ghost => ghost.color = GHOSTS[i++]);
     }
-
-    
     
 
     this.physics.add.collider(player, worldLayer);
@@ -462,3 +467,24 @@ function direction (color, offset = 0) {
 function pickRandomDirection () {
     return DIRECTIONS[Math.floor(Math.random() * DIRECTIONS.length)];
 }
+
+// Define functions that student can use in code
+C4C.Interpreter.define("alertHello", () => {
+    alert("hello");
+});
+
+C4C.Interpreter.define("move", (color, direction) => {
+    moveGhost(color, direction);
+});
+
+C4C.Interpreter.define("pinkMoveLeft", () => {
+    moveGhost('pink', 'left');
+});
+
+// C4C.Interpreter.define("pinkMoveRight", () => {
+//     moveLeft(getGhost('pink'));
+// });
+
+// C4C.Interpreter.define("pinkMoveDown", () => {
+//     moveLeft(getGhost('pink'));
+// });
