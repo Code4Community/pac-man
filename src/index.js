@@ -18,7 +18,7 @@ import munch_mp3 from './assets/waka-waka-munch-short.mp3'
 const DIRECTIONS = ['up', 'right', 'down', 'left'];
 const GHOSTS = ['pink', 'red', 'blue', 'yellow'];
 
-var config = {
+const config = {
     type: Phaser.AUTO,
     parent: 'game',
     width: 450,
@@ -58,13 +58,26 @@ var worldLayer;
 var munch;
 
 var game = new Phaser.Game(config);
-
 const TILE_SIZE = 16;
 document.getElementById('start-over').addEventListener('click', () => {
     game.destroy(true);
+    player = null;
+    dots = null;
+    ghostDots = null;
+    ghosts = null;
+    platforms = null;
+    cursors = null;
+    scoreText = null;
+    positionsArray = null;
+    map = null;
+    tileset = null;
+    worldLayer = null;
+    munch = null;
+    game = null;
     score = 0;
     gameOver = false;
     game = new Phaser.Game(config);
+    
 });
 
 const codeEditor = document.getElementById('code-editor');
