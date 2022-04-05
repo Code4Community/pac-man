@@ -167,7 +167,7 @@ function create ()
     for (let i = 0; i < map.width; i++) {
         for (let j = 1; j < map.height; j++){
             // checking if tile exists at centered position of current tile
-            let centeredPosX = (i * TILE_SIZE) + (TILE_SIZE / 2); 
+            let centeredPosX = (i * TILE_SIZE) + (TILE_SIZE / 2);
             let centeredPosY = (j * TILE_SIZE) + (TILE_SIZE / 2);
             let currentTile = map.getTileAt(i,j);
 
@@ -191,6 +191,7 @@ function create ()
 
     //  Collide the player with the platforms
     this.physics.add.collider(player, platforms);
+    this.physics.add.collider(ghosts, platforms);
 
     //  Checks to see if the player overlaps with any of the normal dots, if he does call the eatDot function
     this.physics.add.overlap(player, dots, eatDot, null, this);
@@ -228,6 +229,14 @@ function update () {
         player.setPosition(440, 232);
     }
 
+    ghosts.children.iterate((child) => {
+        if(child.x > 450) {
+            child.setPosition(0,232);
+        } else if (child.x < -10) {
+            child.setPosition(440,232);
+        }
+    });
+
     processNextMove(player, PLAYER_SPEED);
 
     ghosts.children.entries.forEach(ghost => processNextMove(ghost, GHOST_SPEED, true));
@@ -251,7 +260,6 @@ function processNextMove (sprite, speed, isGhost = false) {
             sprite.nextMove = null;
         } else {
             move(sprite, speed);
-
         }
     }
 }
@@ -473,18 +481,26 @@ C4C.Interpreter.define("alertHello", () => {
     alert("hello");
 });
 
-C4C.Interpreter.define("move", (color, direction) => {
-    moveGhost(color, direction);
+C4C.Interpreter.define("moveUp", () => {
+    ghosts.children.iterate((child) => {
+        setNextMove(child, 'y', -1);
+    })
 });
 
-C4C.Interpreter.define("pinkMoveLeft", () => {
-    moveGhost('pink', 'left');
+C4C.Interpreter.define("moveDown", () => {
+    for(let i = 0; i<GHOSTS.length; i++) {
+        moveGhost(GHOSTS[i], "down");
+    }
 });
 
-// C4C.Interpreter.define("pinkMoveRight", () => {
-//     moveLeft(getGhost('pink'));
-// });
+C4C.Interpreter.define("moveLeft", () => {
+    for(let i = 0; i<GHOSTS.length; i++) {
+        moveGhost(GHOSTS[i], "left");
+    }
+});
 
-// C4C.Interpreter.define("pinkMoveDown", () => {
-//     moveLeft(getGhost('pink'));
-// });
+C4C.Interpreter.define("moveRight", () => {
+    ghosts.children.iterate((child) => {
+        setNextMove(child, 'x', 1);
+    })
+});
