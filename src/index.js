@@ -477,10 +477,6 @@ function pickRandomDirection () {
 }
 
 // Define functions that student can use in code
-C4C.Interpreter.define("alertHello", () => {
-    alert("hello");
-});
-
 C4C.Interpreter.define("moveUp", () => {
     ghosts.children.iterate((child) => {
         setNextMove(child, 'y', -1);
@@ -488,15 +484,15 @@ C4C.Interpreter.define("moveUp", () => {
 });
 
 C4C.Interpreter.define("moveDown", () => {
-    for(let i = 0; i<GHOSTS.length; i++) {
-        moveGhost(GHOSTS[i], "down");
-    }
+    ghosts.children.iterate((child) => {
+        setNextMove(child, 'y', 1);
+    })
 });
 
 C4C.Interpreter.define("moveLeft", () => {
-    for(let i = 0; i<GHOSTS.length; i++) {
-        moveGhost(GHOSTS[i], "left");
-    }
+    ghosts.children.iterate((child) => {
+        setNextMove(child, 'x', -1);
+    })
 });
 
 C4C.Interpreter.define("moveRight", () => {
