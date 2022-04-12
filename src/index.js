@@ -59,6 +59,7 @@ var munch;
 
 var game = new Phaser.Game(config);
 const TILE_SIZE = 16;
+
 document.getElementById('start-over').addEventListener('click', () => {
     game.destroy(true);
     dots = null;
@@ -66,6 +67,11 @@ document.getElementById('start-over').addEventListener('click', () => {
     gameOver = false;
     game = new Phaser.Game(config);
     
+});
+
+document.getElementById('submit').addEventListener('click', () => {
+    const programText = C4C.Editor.getText();
+    C4C.Interpreter.run(programText);
 });
 
 const codeEditor = document.getElementById('code-editor');
@@ -160,7 +166,7 @@ function create ()
     for (let i = 1; i < map.width - 1; i++) {
         for (let j = 1; j < map.height -1; j++){
             // checking if tile exists at centered position of current tile
-            let centeredPosX = (i * TILE_SIZE) + (TILE_SIZE / 2); 
+            let centeredPosX = (i * TILE_SIZE) + (TILE_SIZE / 2);
             let centeredPosY = (j * TILE_SIZE) + (TILE_SIZE / 2);
             let currentTile = map.getTileAt(i,j);
 
@@ -184,6 +190,7 @@ function create ()
 
     //  Collide the player with the platforms
     this.physics.add.collider(player, platforms);
+    this.physics.add.collider(ghosts, platforms);
 
     //  Checks to see if the player overlaps with any of the normal dots, if he does call the eatDot function
     this.physics.add.overlap(player, dots, eatDot, null, this);
@@ -222,9 +229,20 @@ function update () {
         player.setPosition(440, 232);
     }
 
+    ghosts.children.iterate((child) => {
+        if(child.x > 450) {
+            child.setPosition(0,232);
+        } else if (child.x < -10) {
+            child.setPosition(440,232);
+        }
+    });
+
+    processNextMove(player, PLAYER_SPEED);
+
     if (player.nextMove) {
         pipeBoundsCheck(player)
     }
+
 
     processNextMove(player, PLAYER_SPEED);
     player.x = Math.round(player.x);
@@ -495,3 +513,40 @@ function direction (color, offset = 0) {
 function pickRandomDirection () {
     return DIRECTIONS[Math.floor(Math.random() * DIRECTIONS.length)];
 }
+
+// Define functions that student can use in code
+C4C.Interpreter.define("moveUp", () => {
+    ghosts.children.iterate((child) => {
+        setNextMove(child, 'y', -1);
+    })
+});
+
+C4C.Interpreter.define("moveDown", () => {
+    ghosts.children.iterate((child) => {
+        setNextMove(child, 'y', 1);
+    })
+});
+
+C4C.Interpreter.define("moveLeft", () => {
+    ghosts.children.iterate((child) => {
+        setNextMove(child, 'x', -1);
+    })
+});
+
+C4C.Interpreter.define("moveRight", () => {
+    ghosts.children.iterate((child) => {
+        setNextMove(child, 'x', 1);
+    })
+});
+
+C4C.Interpreter.define("rotate", () => {
+    ghosts.children.iterate((child) => {
+        for(let i = 0; i <= 90; i++) {
+            //child.setAngle(i);
+            setTimeout(function () {
+                child.setAngle(i);
+            }, 5000);
+            
+        }
+    })
+});
