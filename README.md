@@ -1,11 +1,7 @@
 # Pac Man
+This is a learning module based upon Pac-Man built using [Phaser](https://phaser.io/).
 
-This is a Pac-Man clone made using [Phaser](https://phaser.io/).
-
-## Overview
-Students will write code to control the ghosts. They will learn the difference between static and dynamic character behavior. Then they will implement static behavior using hard coding and dynamic behavior using parameterization. Students will learn about function calls, variables, and if statements.
-
-## Getting started
+## Getting Started
 1. Clone this repository
 1. Install [Node.js and npm](https://nodejs.org/en/download/)
 1. Install dependencies: `npm i`
