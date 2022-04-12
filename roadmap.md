@@ -1,7 +1,7 @@
 # Pac-Man Roadmap
 
 ## Goal
-This will be a competitive 2-player learning module. Player 1 will write code to control the ghosts, and Player 2 will play against those ghosts as Pac-Man. Once the game ends, the players will switch.
+This will be a competitive 2-player learning module. Both players will write code to control the ghosts. After they submit their code, they will play as Pac-Man against each other's ghosts.
 
 ## Milestones
 * Game logic (almost complete)
