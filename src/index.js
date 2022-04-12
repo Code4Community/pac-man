@@ -71,7 +71,6 @@ document.getElementById('start-over').addEventListener('click', () => {
 document.getElementById('submit').addEventListener('click', () => {
     const programText = C4C.Editor.getText();
     C4C.Interpreter.run(programText);
-    console.log(programText)
 });
 
 const codeEditor = document.getElementById('code-editor');
@@ -498,5 +497,17 @@ C4C.Interpreter.define("moveLeft", () => {
 C4C.Interpreter.define("moveRight", () => {
     ghosts.children.iterate((child) => {
         setNextMove(child, 'x', 1);
+    })
+});
+
+C4C.Interpreter.define("rotate", () => {
+    ghosts.children.iterate((child) => {
+        for(let i = 0; i <= 90; i++) {
+            //child.setAngle(i);
+            setTimeout(function () {
+                child.setAngle(i);
+            }, 5000);
+            
+        }
     })
 });
