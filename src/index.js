@@ -51,6 +51,9 @@ var gameOver = false;
 var scoreText;
 var positionsArray;
 
+/**
+ * @type {Phaser.Tilemaps.Tilemap}
+ */
 var map;
 var tileset;
 var worldLayer;
@@ -199,6 +202,7 @@ function create ()
 }
 
 function update () {
+    
     if (gameOver) {
         return;
     }
@@ -213,8 +217,7 @@ function update () {
     }
     else if (cursors.down.isDown) {
         moveDown(player);
-    } 
-    
+    }
 
     if(player.x > 450) {
         player.setPosition(0,232);
@@ -238,10 +241,14 @@ function pipeBoundsCheck(player){
     let tile;
 
     // get the current tile of the player
-    let tileX = (Math.round(player.x) % map.width);
-    let tileY = (Math.round(player.y) % map.height);
-
-    console.log(map.getTileAt(tileX, tileY))
+    /**
+     * @type {Phaser.Tilemaps.Tile}
+     */
+    
+    let currentTile = map.getTileAtWorldXY(player.x, player.y, true, null, worldLayer);; 
+    let tileX = currentTile.x;
+    let tileY = currentTile.y;
+    
 
     /* get the tile that pacman wants to enter */
     if (direction == 'x'){
