@@ -272,7 +272,7 @@ function update() {
 
     if (player.nextMove) {
         pipeBoundsCheck(player);
-        console.log("X: " + player.x.toString() + "  Y: " + player.y.toString())
+       // console.log("X: " + player.x.toString() + "  Y: " + player.y.toString())
         if (player.x < 0) {
             player.x = 0;
             pipeBoundsCheck(player);
@@ -334,8 +334,8 @@ function eatDot(player, dot) {
     munch.play();
 
     if ((dots.countActive(true) === 0) && ghostDots.countActive(true) === 0) {
-        dots = createDots(this, positionsArray);
-        ghostDots = createGhostDots(this, ghostDotsPositionsArray);
+        dots = worldFunc.createDots(this, positionsArray);
+        ghostDots = worldFunc.createGhostDots(this, ghostDotsPositionsArray);
         this.physics.add.overlap(player, dots, eatDot, null, this);
         this.physics.add.overlap(player, ghostDots, eatGhostDot, null, this);
 
@@ -361,8 +361,8 @@ function eatGhostDot(player, ghostDot) {
 
     // Remake dots if they're all eaten
     if ((dots.countActive(true) === 0) && ghostDots.countActive(true) === 0) {
-        dots = createDots(this, positionsArray);
-        ghostDots = createGhostDots(this, ghostDotsPositionsArray);
+        dots = worldFunc.createDots(this, positionsArray);
+        ghostDots = worldFunc.createGhostDots(this, ghostDotsPositionsArray);
         this.physics.add.overlap(player, dots, eatDot, null, this);
         this.physics.add.overlap(player, ghostDots, eatGhostDot, null, this);
 
