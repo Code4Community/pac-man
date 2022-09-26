@@ -1,3 +1,5 @@
+
+
 function processNextMove(sprite, speed, isGhost = false) {
     if (sprite.nextMove) {
 
