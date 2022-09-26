@@ -1,32 +1,23 @@
-# Pac-Man Teaching Plan
+# PacMan teaching procedure
+1. Play a normal round
+1. Hard code the ghosts to move in certain directions
+1. Have students code an if-statement to control ghost
+1. If statement based on where pac-man is
+1. While loop with if-statement inside
+1. Make sure ghost does not get stuck
+1. Maybe let them see the actual code for the normal game, quick blurb about AI idk
+1. Play with friends
 
-## Learning Objectives
-Students will learn the difference between static and dynamic character behavior. Then, they will implement static behavior using hard coding and dynamic behavior using parameterization. Students will learn about function calls, variables, and if statements.
+## Step 2 sample code:
 
-## Lesson Plan
-1. Teach students about functions
-    * Move left, right, up, down
-1. Demo multiplayer game functionality
-1. Game time
-1. Teach students about basic if statements
-    * Can the ghost move in this direction?
-1. Game time
-1. Teach students about advanced if statements
-    * Is Pac-Man nearby?
-1. Game time
-1. Teach students about loops
-    * Get and keep ghost unstuck
-1. Game time
-1. Talk about ghost movement logic for original game
-    * Artificial intelligence
-
-## Step 1 Sample Code
 move(right, 3)
 
 move(down, 2)
 
+etc.
 
-## Step 4 Sample Code
+## Step 3 sample code:
+
 if(ghost can move right)
 
 move right
@@ -35,7 +26,10 @@ else if(ghost can move left)
 
 move left
 
-## Step 6 Sample Code
+etc
+
+## Step 4:
+
 If (pac man to the right and can move right)
 
 move right
@@ -44,7 +38,11 @@ Else if (pac man to the left and can move left)
 
 Move left
 
-## Step 8 Sample Code
+Etc
+
+
+## Step 5:
+
 While (not at end of game)
 
 If (pac man to the right and can move right)
