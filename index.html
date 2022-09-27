@@ -7,17 +7,28 @@
 			html{
 				overflow-x: hidden;
 			}
-			@media screen and (max-width: 1270px) {
 			.container {
-				display: none;
-				}
-			#help{
-					display: none !important;
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: space-evenly;
+				align-items: center;
+				margin-top: 30px;
+				
+				
 			}
-			#alert{
-					display: contents !important;
-				}
+			.code-container {
+				display: flex;
+				
 			}
+			.code-container > div {
+				padding: 20px;
+			}
+			/*@media screen and (max-width: 1270px) {
+			.container {
+				display: block;
+				}
+			
+			}*/
 			body {
 			background-color: rgb(70, 63, 63);
 			}
@@ -27,7 +38,7 @@
 			#body {
 			height: 100px;
 			}
-			.column-left {
+			/*.column-left {
 			margin-top: 4%;
 			float: left;
 			margin-right: -3%;
@@ -43,13 +54,15 @@
 			display: inline-block;
 			width: 50%;
 			min-width: 435px;
-			}
+			}*/
+			
 			#titlebox {
 			border: 1px solid black;
-			position: absolute;
-			height: 5%;
-			width: 100%;
+			
+			
 			background-color: #c6c6c6;
+			margin-top: 10px;
+			padding: 10px;
 			}
 			#title {
 			color: white;
@@ -63,6 +76,14 @@
 			<center><b style="color: #000;"> Pac-Man by Code 4 Community at Ohio State </b></center>
 		</nav>
 		<div class="container">
+			<div id="game">
+			</div>
+			<div class = "code-container">
+			<div class="column-center" id="code-editor">
+				<a style="color: fff;">
+					<p><b>Instructions:</b> Use the code editor below to tell the ghosts how to move.</p>
+				</a>
+			</div>
 			<div class="column-right">
                 <br>
                 <b style="text-align: center; color: whitesmoke"> Commands </b>
@@ -99,13 +120,9 @@
               </p>
               
             </div>
-			<div class="column-left" id="game">
-			</div>
-			<div class="column-center" id="code-editor">
-				<a style="color: fff;">
-					<p><b>Instructions:</b> Use the code editor below to tell the ghosts how to move.</p>
-				</a>
-			</div>
+		</div>
+			
+			
 		</div>
 
 		<p><br></p>
