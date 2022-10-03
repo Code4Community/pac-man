@@ -6,8 +6,13 @@ function getGhost(color , ghosts) {
 
 function setGhostSize(ghosts) {
     ghosts.children.entries.forEach(ghost => {
-        ghost.setSize(16, 16);
+        // Set ghost size
         ghost.setDisplaySize(16, 16);
+
+        // Changing the body size.  Don't ask me why this works: it shouldn't. 
+        // The size should be 32 by 32 but that's too big, and 16 by 16 is too small...
+        ghost.setSize(24, 24);
+        
     });
 }
 
