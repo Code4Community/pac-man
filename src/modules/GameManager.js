@@ -61,7 +61,6 @@ function readState(gameId, context, callback) {
             }
         }
     );
-  
 }
 
 function errorResponse(errorMessage, awsRequestId, callback) {
@@ -77,14 +76,3 @@ function errorResponse(errorMessage, awsRequestId, callback) {
     });
   }
 
-  // Auto-Savees game for 5 minutes, then resets it back to the game start stage
-restore_message = 'Restoring the game... Please wait...'
-restore_complete = 'The game has been restored successfully :)'
-
-
-
-function restore_game(restore_message) {
-  if(restore_message) {
-    
-  }
-}

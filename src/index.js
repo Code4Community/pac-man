@@ -383,5 +383,3 @@ function hitGhost(player, ghost) {
         gameOver = true;
     }
 }
-
-
