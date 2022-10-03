@@ -78,13 +78,13 @@ document.getElementById('start-over').addEventListener('click', () => {
     dots = null;
     score = 0;
     gameOver = false;
-    window.location.reload()
-
+    game = new Phaser.Game(config);
 });
 
 document.getElementById('submit').addEventListener('click', () => {
     const programText = C4C.Editor.getText();
     C4C.Interpreter.run(programText);
+    
 });
 
 function preload() {
