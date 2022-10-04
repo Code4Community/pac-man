@@ -72,14 +72,17 @@ var munch;
 
 var game = new Phaser.Game(config);
 
-
-document.getElementById('start-over').addEventListener('click', () => {
+// Helper function to restart game on death or on button press.
+function restartGame() {
     game.destroy(true);
     dots = null;
     score = 0;
     gameOver = false;
     game = new Phaser.Game(config);
-});
+};
+
+document.getElementById('start-over').addEventListener('click', restartGame);
+    
 
 document.getElementById('submit').addEventListener('click', () => {
     const programText = C4C.Editor.getText();
@@ -334,12 +337,16 @@ function eatDot(player, dot) {
     munch.play();
 
     if ((dots.countActive(true) === 0) && ghostDots.countActive(true) === 0) {
-        dots = worldFunc.createDots(this, positionsArray);
-        ghostDots = worldFunc.createGhostDots(this, ghostDotsPositionsArray);
-        this.physics.add.overlap(player, dots, eatDot, null, this);
-        this.physics.add.overlap(player, ghostDots, eatGhostDot, null, this);
+        this.physics.pause();
 
-        var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+        player.setTint(0x00ff00);
+        player.anims.stop();
+
+        gameOver = true;
+        
+        setTimeout(() => alert("You Win!"), 200);
+        // Start the game over after 2 seconds
+        setTimeout(restartGame, 2000);
     }
 }
 
@@ -375,12 +382,20 @@ function eatGhostDot(player, ghostDot) {
 function hitGhost(player, ghost) {
     if (player.isPowerful) {
         ghost.disableBody(true, true);
+        
+        // Remove ghost and then respawn it in the box
+        ghostFunc.respawnGhost(ghost);
+        score += 100;
+        
     } else {
         this.physics.pause();
 
         player.setTint(0xff0000);
+        player.anims.stop();
 
         gameOver = true;
+        // Start the game over after 2 seconds
+        setTimeout(restartGame, 2000);
     }
 }
 
