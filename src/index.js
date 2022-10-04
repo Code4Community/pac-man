@@ -167,7 +167,7 @@ function create() {
     this.physics.add.collider(ghosts, worldLayer);
     this.physics.add.collider(player, dots);
 
-    ghostFunc.setGhostSize(ghosts);
+    ghostFunc.setGhostSize(ghosts, false);
 
     // Player physics properties. Give the little guy a slight bounce.
 
@@ -361,7 +361,7 @@ function eatGhostDot(player, ghostDot) {
     ghosts.children.iterate((child) => {
         child.setTexture('vulnerable-ghost');
     });
-    ghostFunc.setGhostSize(ghosts);
+    ghostFunc.setGhostSize(ghosts, true);
 
     // Make player able to eat ghosts
     player.isPowerful = true;

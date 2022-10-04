@@ -4,7 +4,7 @@ function getGhost(color , ghosts) {
     return ghosts.children.entries.find(ghost => ghost.color == color);
 }
 
-function setGhostSize(ghosts) {
+function setGhostSize(ghosts, powerful=false) {
     ghosts.children.entries.forEach(ghost => {
         // Set ghost size
         ghost.setDisplaySize(16, 16);
@@ -12,6 +12,12 @@ function setGhostSize(ghosts) {
         // Changing the body size.  Don't ask me why this works: it shouldn't. 
         // The size should be 32 by 32 but that's too big, and 16 by 16 is too small...
         ghost.setSize(24, 24);
+
+        if (powerful) {
+            // Apparently the sprite scaling affects how the body size is done, basically
+            // Phaser sucks
+            ghost.setSize(320, 320);
+        }
         
     });
 }
@@ -57,7 +63,8 @@ function enableGhosts() {
     getGhost('red'   , ghosts).setTexture('red-ghost').setScale(1);
     getGhost('yellow', ghosts).setTexture('yellow-ghost').setScale(1);
     getGhost('blue'  , ghosts).setTexture('blue-ghost').setScale(1);
-    setGhostSize(ghosts);
+    
+    setGhostSize(ghosts, false);
 
     player.isPowerful = false;
 }
