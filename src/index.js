@@ -70,6 +70,13 @@ var tileset;
 var worldLayer;
 var munch;
 
+var ghostDotsPositionsArray = [
+    [25, 40],
+    [25, 380],
+    [425, 40],
+    [425, 380]
+];
+
 var game = new Phaser.Game(config);
 
 
