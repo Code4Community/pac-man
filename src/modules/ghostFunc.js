@@ -6,12 +6,7 @@ function getGhost(color , ghosts) {
 
 function setGhostSize(ghosts, powerful=false) {
     ghosts.children.entries.forEach(ghost => {
-        // Set ghost size
-        ghost.setDisplaySize(16, 16);
-
-        // Changing the body size.  Don't ask me why this works: it shouldn't. 
-        // The size should be 32 by 32 but that's too big, and 16 by 16 is too small...
-        ghost.setSize(24, 24);
+        setGhostNormal(ghost);
 
         if (powerful) {
             // Apparently the sprite scaling affects how the body size is done, basically
@@ -20,6 +15,16 @@ function setGhostSize(ghosts, powerful=false) {
         }
         
     });
+}
+
+function setGhostNormal(ghost) {
+    // Set ghost size
+    ghost.setDisplaySize(16, 16);
+
+    // Changing the body size.  Don't ask me why this works: it shouldn't. 
+    // The size should be 32 by 32 but that's too big, and 16 by 16 is too small...
+    ghost.setSize(24, 24);
+
 }
 
 function isMoving(ghost) {
@@ -59,22 +64,53 @@ function distance(color) {
 }
 
 function enableGhosts() {
-    getGhost('pink'  , ghosts).setTexture('pink-ghost').setScale(1);
-    getGhost('red'   , ghosts).setTexture('red-ghost').setScale(1);
-    getGhost('yellow', ghosts).setTexture('yellow-ghost').setScale(1);
-    getGhost('blue'  , ghosts).setTexture('blue-ghost').setScale(1);
+    ghosts.children.entries.forEach(ghost => {
+        ghost.setTexture(ghost.color + '-ghost').setScale(1);
+    });
     
     setGhostSize(ghosts, false);
 
     player.isPowerful = false;
 }
 
+function enableGhost(ghost) {
+    ghost.setTexture(ghost.color + '-ghost').setScale(1);
+    setGhostNormal(ghost, false);
+
+}
+
+const centerX = 225;
+const centerY = 230;
+
+/**
+ * 
+ * @param {Phaser.Physics.Arcade.Image} ghost 
+ */
+function respawnGhost (ghost) {
+    // Stop displaying the ghost
+    ghost.setActive(false).setVisible(false);
+
+    // Reset the ghost's position
+    ghost.x = centerX;
+    ghost.y = centerY;
+
+    // Reactive the ghost after 2 seconds
+    setTimeout(() => {
+        enableGhost(ghost);
+        ghost.setVisible(true);
+        setTimeout(() =>
+            ghost.setActive(true).enableBody(), 1000);
+    }, 1000);
+
+}   
+
 
 module.exports = {
-    enableGhosts , enableGhosts,
-    setGhostSize : setGhostSize,
-    isMoving : isMoving,
-    moveGhost : moveGhost,
-    scaryPacMan : scaryPacMan,
-    distance : distance,
+    enableGhosts,
+    setGhostSize,
+    isMoving,
+    moveGhost,
+    scaryPacMan,
+    distance,
+    respawnGhost
 }

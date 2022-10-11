@@ -48,6 +48,7 @@ const config = {
 */
 
 
+
 const GHOSTS = ['pink', 'red', 'blue', 'yellow'];
 
 const PLAYER_SPEED = 80;
@@ -79,14 +80,17 @@ var ghostDotsPositionsArray = [
 
 var game = new Phaser.Game(config);
 
-
-document.getElementById('start-over').addEventListener('click', () => {
+// Helper function to restart game on death or on button press.
+function restartGame() {
     game.destroy(true);
     dots = null;
     score = 0;
     gameOver = false;
     game = new Phaser.Game(config);
-});
+};
+
+document.getElementById('start-over').addEventListener('click', restartGame);
+    
 
 document.getElementById('submit').addEventListener('click', () => {
     const programText = C4C.Editor.getText();
@@ -146,10 +150,16 @@ function create() {
     player.nextMove = null;
     player.isPowerful = false;
 
+
     let pinkGhost = this.physics.add.sprite(195, 230, 'pink-ghost');
+    pinkGhost.color = 'pink';
     let redGhost = this.physics.add.sprite(225, 230, 'red-ghost');
+    redGhost.color = 'red';
     let blueGhost = this.physics.add.sprite(255, 230, 'blue-ghost');
+    blueGhost.color = 'blue';
     let yellowGhost = this.physics.add.sprite(225, 185, 'yellow-ghost');
+    yellowGhost.color = 'yellow';
+    
 
     ghosts = this.physics.add.group();
 
@@ -211,6 +221,7 @@ function create() {
             }
         }
     }
+    
 
     dots = worldFunc.createDots(this, positionsArray);
 
@@ -330,6 +341,19 @@ function pipeBoundsCheck(player) {
     }
 }
 
+function winGame () {
+    //this.physics.pause();
+
+    player.setTint(0x00ff00);
+    player.anims.stop();
+
+    gameOver = true;
+    
+    setTimeout(() => alert("You Win!"), 200);
+    // Start the game over after 2 seconds
+    setTimeout(restartGame, 2000);
+}
+
 function eatDot(player, dot) {
     dot.disableBody(true, true);
 
@@ -341,15 +365,12 @@ function eatDot(player, dot) {
     munch.play();
 
     if ((dots.countActive(true) === 0) && ghostDots.countActive(true) === 0) {
-        dots = worldFunc.createDots(this, positionsArray);
-        ghostDots = worldFunc.createGhostDots(this, ghostDotsPositionsArray);
-        this.physics.add.overlap(player, dots, eatDot, null, this);
-        this.physics.add.overlap(player, ghostDots, eatGhostDot, null, this);
-
-        var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+        this.physics.pause();
+        winGame();
     }
 }
 
+let reEnableTimeout = null;
 function eatGhostDot(player, ghostDot) {
     ghostDot.disableBody(true, true);
 
@@ -368,26 +389,37 @@ function eatGhostDot(player, ghostDot) {
 
     // Remake dots if they're all eaten
     if ((dots.countActive(true) === 0) && ghostDots.countActive(true) === 0) {
-        dots = worldFunc.createDots(this, positionsArray);
-        ghostDots = worldFunc.createGhostDots(this, ghostDotsPositionsArray);
-        this.physics.add.overlap(player, dots, eatDot, null, this);
-        this.physics.add.overlap(player, ghostDots, eatGhostDot, null, this);
+        this.physics.pause();
+        winGame();
 
         var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+    } else {
+        // Get rid of the reEnable timeout
+        if (reEnableTimeout) {
+            clearTimeout(reEnableTimeout);
+        }
+        // Set the new timeout
+        reEnableTimeout = setTimeout(ghostFunc.enableGhosts, 10 * 1000);
     }
-
-    setTimeout(ghostFunc.enableGhosts, 4000);
 }
 
 function hitGhost(player, ghost) {
     if (player.isPowerful) {
         ghost.disableBody(true, true);
+        
+        // Remove ghost and then respawn it in the box
+        ghostFunc.respawnGhost(ghost);
+        score += 100;
+        
     } else {
         this.physics.pause();
 
         player.setTint(0xff0000);
+        player.anims.stop();
 
         gameOver = true;
+        // Start the game over after 2 seconds
+        setTimeout(restartGame, 2000);
     }
 }
 
