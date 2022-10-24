@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import C4C from 'c4c-editor-and-interpreter';
-import interObj from './modules/interpFunc.js'
+import {createEditor, createEventListeners, initializeEditor} from './modules/interpFunc.js'
 
 import platform from './assets/platform.png'
 import dot from './assets/dot.png'
@@ -40,7 +40,10 @@ const config = {
         preload: preload,
         create: create,
         update: update
-    }
+    },
+    dom: {
+        createContainer: true,
+      },
 };
 
 /**
@@ -78,6 +81,9 @@ var ghostDotsPositionsArray = [
     [425, 380]
 ];
 
+createEditor(C4C);
+
+let programText ='';
 var game = new Phaser.Game(config);
 
 // Helper function to restart game on death or on button press.
@@ -93,8 +99,9 @@ document.getElementById('start-over').addEventListener('click', restartGame);
     
 
 document.getElementById('submit').addEventListener('click', () => {
-    const programText = C4C.Editor.getText();
-    C4C.Interpreter.run(programText);
+    // Delete the old array
+    programText = C4C.Editor.getText();
+    
     
 });
 
@@ -134,6 +141,10 @@ function preload() {
 }
 
 function create() {
+    initializeEditor(C4C);
+    createEventListeners(this);
+    
+    
     map = this.make.tilemap({
         key: "map"
     });
@@ -258,6 +269,7 @@ function create() {
 }
 
 function update() {
+    C4C.Interpreter.run(programText);
 
     if (gameOver) {
         return;
