@@ -1,16 +1,5 @@
-import C4C from 'c4c-editor-and-interpreter';
+// import C4C from 'c4c-editor-and-interpreter';
 import moveObj from './moveFunc.js'
-
-const codeEditor = document.getElementById('code-editor');
-
-/*
-
-0 = pink 
-1 = red
-2 = blue
-3 = yellow
-
-*/
 
 
 const theme = {
@@ -23,84 +12,113 @@ const theme = {
     }
 };
 
-C4C.Editor.create(codeEditor, theme);
 
-
-
-// Get text from editor
-
-/* 
-
-var newText == text from editor;
-
-function on codeEdit(){
-
-    if(newText.startsWith('example') || newText.includes('key Phrases')){
-        C4C function to move ghost...
-    } else {
-        return 'Sorry that code is... try looking at the help section on the right!'; 
-    }
+/**
+ * 
+ * @param {Phaser.Game} game 
+ */
+export const createEventListeners  = (game) =>  {
+    
+    
+    const codeEditor = document.getElementById('code-editor');
+    // Set onclick event for document
+    document.addEventListener('click', (event) => {
+        // Check if codeEditor has class cm-focused
+        if (codeEditor.getElementsByClassName('cm-editor')[0].classList.contains('cm-focused')) {
+            // if so, enable keyboard
+            game.input.keyboard.disableGlobalCapture();
+        } else {
+            // if not, disable keyboard
+            game.input.keyboard.enableGlobalCapture();
+        }
+    });
 }
 
+export const createEditor= (c4c) => {
+    
+const codeEditor = document.getElementById('code-editor');
+    c4c.Editor.create(codeEditor, theme);
 
-*/
+}
 
-//======
+export const initializeEditor = (c4c) => {
+    
+    c4c.Interpreter.define('move', (item , dir) => {
+        
 
-C4C.Interpreter.define("moveUp", () => {
-    ghosts.children.iterate((child) => {
-        moveObj.setNextMove(child, 'y', -1);
-    })
-});
+        let litem = item.toLowerCase()
+        let ldir = dir.toLowerCase()
 
-C4C.Interpreter.define("moveDown", () => {
-    ghosts.children.iterate((child) => {
-        moveObj.setNextMove(child, 'y', 1);
-    })
-});
+        var redChild = ghosts.children.entries[1]
+        var pinkChild = ghosts.children.entries[0]
+        var blueChild = ghosts.children.entries[2]
+        var yellowChild = ghosts.children.entries[3]
 
-C4C.Interpreter.define("moveLeft", () => {
-    ghosts.children.iterate((child) => {
-        moveObj.setNextMove(child, 'x', -1);
-    })
-});
-
-C4C.Interpreter.define("moveRight", () => {
-    ghosts.children.iterate((child) => {
-        moveObj.setNextMove(child, 'x', 1);
-    })
-});
-
-C4C.Interpreter.define("rotate", () => {
-    ghosts.children.iterate((child) => {
-        for(let i = 0; i <= 90; i++) {
-            //child.setAngle(i);
-            setTimeout(function () {
-                child.setAngle(i);
-            }, 5000);
-            
+        function getGhost(litem) {
+            if(litem == 'pink'){
+                return pinkChild
+            } else if(litem == 'blue'){
+                return blueChild
+            }
+            else if(litem == 'yellow'){
+                return yellowChild
+            }
+            else if(litem == 'red'){
+                return redChild
+            }
+            else{
+                return '[*] Error'
+            }
         }
-    })
-});
+        
+        function getDir(ldir) {
+            if(ldir == 'down'){
+                let cords = 'y'
+                let ldir = 1
+                return [cords , ldir]
+            } else if(ldir == 'left'){
+                let cords = 'x'
+                let ldir = -1
+                return [cords , ldir]
+            }
+            else if(ldir == 'right'){
+                let cords = 'x'
+                let ldir = 1
+                return [cords , ldir]
+            }
+            else if (ldir == 'up'){
+                let cords = 'y'
+                let ldir = -1
+                return [cords , ldir]
+            }
+        }
+        
+        let direction = getDir(ldir)
+        //console.log(direction[0])
+
+        if(litem == 'all'){
+        ghosts.children.iterate((litem) => {
+            moveObj.setNextMove(litem, direction[0], direction[1]);
+        })
+        }else{
+            moveObj.setNextMove(getGhost(litem), direction[0], direction[1]);
+        }
+    });
 
 
+
+    c4c.Interpreter.define("rotate", () => {
+        
+        ghosts.children.iterate((child) => {
+            for(let i = 0; i <= 90; i++) {
+                //child.setAngle(i);
+                setTimeout(function () {
+                    child.setAngle(i);
+                }, 5000);
+                
+            }
+        })
+    });
+    
+}
 // =====
-
-
-
-C4C.Interpreter.define("moveRedLeft", (item) => {
-    var redChild = ghosts.children.entries[1]
-    moveObj.setNextMove(redChild, 'x' , -item);
-});
-C4C.Interpreter.define("moveRedRight", (item) => {
-    var redChild = ghosts.children.entries[1]
-    moveObj.setNextMove(redChild, 'x' , item);
-});
-C4C.Interpreter.define("moveRedUp", (item) => {
-    var redChild = ghosts.children.entries[1]
-    moveObj.setNextMove(redChild, 'y' , -item);
-});
-C4C.Interpreter.define("moveRedDown", (item) => {
-    var redChild = ghosts.children.entries[1]
-    moveObj.setNextMove(redChild, 'y' , item);
-});
