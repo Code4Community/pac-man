@@ -33,7 +33,7 @@ const config = {
             gravity: {
                 y: 0
             },
-            debug: false
+            debug: true
         }
     },
     scene: {
@@ -236,6 +236,7 @@ function create() {
     if (!isProduction) {
         window.player = player;
         window.ghosts = ghosts;
+        window.ph = this;
     }
 }
 
@@ -305,7 +306,7 @@ function pipeBoundsCheck(player) {
     let tileX = currentTile.x;
     let tileY = currentTile.y;
 
-
+    /* */
     /* get the tile that pacman wants to enter */
     if (direction == 'x') {
         if (sign == 1) {
