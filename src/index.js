@@ -104,6 +104,8 @@ function restartGame() {
     score = 0;
     gameOver = false;
     game = new Phaser.Game(config);
+    location = [];
+    ghostLoopI = 0;
 };
 
 document.getElementById('start-over').addEventListener('click', restartGame);
@@ -113,6 +115,8 @@ document.getElementById('submit').addEventListener('click', () => {
     // Delete the old array
     programText = C4C.Editor.getText();
     ghostLoopSpeed = document.getElementById('loopSpeed').value;
+    ghostLoopI = 0;
+    location = [];
     
     
 });
