@@ -22,6 +22,8 @@ import directFunc from "./modules/directFunc";
 import worldFunc from "./modules/worldFunc"
 
 
+  
+
 const config = {
     type: Phaser.AUTO,
     parent: 'game',
@@ -74,6 +76,15 @@ var tileset;
 var worldLayer;
 var munch;
 
+// Location of ghost code step
+var location = [];
+
+// How often to run the ghost code
+var ghostLoopSpeed = 50;
+
+// Current index for running ghost code
+var ghostLoopI = 0;
+
 var ghostDotsPositionsArray = [
     [25, 40],
     [25, 380],
@@ -101,6 +112,7 @@ document.getElementById('start-over').addEventListener('click', restartGame);
 document.getElementById('submit').addEventListener('click', () => {
     // Delete the old array
     programText = C4C.Editor.getText();
+    ghostLoopSpeed = document.getElementById('loopSpeed').value;
     
     
 });
@@ -269,8 +281,24 @@ function create() {
 }
 
 function update() {
-    C4C.Interpreter.run(programText);
+    if (ghostLoopI == 0) {
+        // Run one setp of ghost movement
+        let [result, loc] = C4C.Interpreter.stepRun(programText, location);
+        location = loc;
+        
+        // If at end of program, reset location
+        if (location[0] == 1) location = [];
 
+        // If a result is returned, probably run another step
+        if (result) {
+            console.log(result);
+        }
+    }
+    ghostLoopI++;
+    if (ghostLoopI >= ghostLoopSpeed) {
+        ghostLoopI = 0;
+    }
+    
     if (gameOver) {
         return;
     }
@@ -434,5 +462,6 @@ function hitGhost(player, ghost) {
         setTimeout(restartGame, 2000);
     }
 }
+
 
 
