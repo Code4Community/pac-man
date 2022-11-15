@@ -22,6 +22,8 @@ import directFunc from "./modules/directFunc";
 import worldFunc from "./modules/worldFunc"
 
 
+  
+
 const config = {
     type: Phaser.AUTO,
     parent: 'game',
@@ -74,6 +76,15 @@ var tileset;
 var worldLayer;
 var munch;
 
+// Location of ghost code step
+var location = [];
+
+// How often to run the ghost code
+var ghostLoopSpeed = 50;
+
+// Current index for running ghost code
+var ghostLoopI = 0;
+
 var ghostDotsPositionsArray = [
     [25, 40],
     [25, 380],
@@ -93,6 +104,8 @@ function restartGame() {
     score = 0;
     gameOver = false;
     game = new Phaser.Game(config);
+    location = [0];
+    ghostLoopI = 0;
 };
 
 document.getElementById('start-over').addEventListener('click', restartGame);
@@ -101,6 +114,9 @@ document.getElementById('start-over').addEventListener('click', restartGame);
 document.getElementById('submit').addEventListener('click', () => {
     // Delete the old array
     programText = C4C.Editor.getText();
+    ghostLoopSpeed = document.getElementById('loopSpeed').value;
+    ghostLoopI = 0;
+    location = [];
     
     
 });
@@ -269,8 +285,49 @@ function create() {
 }
 
 function update() {
-    C4C.Interpreter.run(programText);
+    if (ghostLoopI == 0) {
+        let origLoc = [...location];
+        // Which ghosts have moved so far, bitboard
+        // If the first bit is set, the first ghost has moved
+        // If the second bit is set, the second ghost has moved ...
+        let moved = 0b0000;
+        do  {
+            
+            // Run one step of ghost AI
+            let [result, loc] = C4C.Interpreter.stepRun(programText, location);
+            
+            
+            
+            // If at end of program, reset location
+            if (location[0] == 1) location = [];
 
+            // If a result is returned, probably run another step
+            if (result) {
+                let newMoved = 0b0000;
+                
+                // If the result is a ghost, set that ghost's bit to 1
+                let ghost = result.ghost;
+                if (ghost == 'pink') newMoved = 0b0001;
+                else if (ghost == 'red') newMoved = 0b0010;
+                else if (ghost == 'blue') newMoved = 0b0100;
+                else if (ghost == 'orange') newMoved = 0b1000;
+                else if (ghost == 'all') newMoved = 0b1111;
+
+                // If the ghost has already moved, stop running
+                if (moved & newMoved) break;
+
+                // Otherwise, go to the new location and set the ghost's bit to 1, and run
+                moved |= newMoved;
+                location = loc;
+                result.func();
+           }
+        } while (JSON.stringify(location) != JSON.stringify(origLoc));
+    }
+    ghostLoopI++;
+    if (ghostLoopI >= ghostLoopSpeed) {
+        ghostLoopI = 0;
+    }
+    
     if (gameOver) {
         return;
     }
@@ -331,7 +388,7 @@ function pipeBoundsCheck(player) {
      * @type {Phaser.Tilemaps.Tile}
      */
 
-    let currentTile = map.getTileAtWorldXY(player.x, player.y, true, null, worldLayer);;
+    let currentTile = map.getTileAtWorldXY(player.x, player.y, true, null, worldLayer);
     let tileX = currentTile.x;
     let tileY = currentTile.y;
 
@@ -434,5 +491,6 @@ function hitGhost(player, ghost) {
         setTimeout(restartGame, 2000);
     }
 }
+
 
 
