@@ -104,7 +104,7 @@ function restartGame() {
     score = 0;
     gameOver = false;
     game = new Phaser.Game(config);
-    location = [];
+    location = [0];
     ghostLoopI = 0;
 };
 
@@ -286,17 +286,42 @@ function create() {
 
 function update() {
     if (ghostLoopI == 0) {
-        // Run one setp of ghost movement
-        let [result, loc] = C4C.Interpreter.stepRun(programText, location);
-        location = loc;
-        
-        // If at end of program, reset location
-        if (location[0] == 1) location = [];
+        let origLoc = [...location];
+        // Which ghosts have moved so far, bitboard
+        // If the first bit is set, the first ghost has moved
+        // If the second bit is set, the second ghost has moved ...
+        let moved = 0b0000;
+        do  {
+            
+            // Run one step of ghost AI
+            let [result, loc] = C4C.Interpreter.stepRun(programText, location);
+            
+            
+            
+            // If at end of program, reset location
+            if (location[0] == 1) location = [];
 
-        // If a result is returned, probably run another step
-        if (result) {
-            console.log(result);
-        }
+            // If a result is returned, probably run another step
+            if (result) {
+                let newMoved = 0b0000;
+                
+                // If the result is a ghost, set that ghost's bit to 1
+                let ghost = result.ghost;
+                if (ghost == 'pink') newMoved = 0b0001;
+                else if (ghost == 'red') newMoved = 0b0010;
+                else if (ghost == 'blue') newMoved = 0b0100;
+                else if (ghost == 'orange') newMoved = 0b1000;
+                else if (ghost == 'all') newMoved = 0b1111;
+
+                // If the ghost has already moved, stop running
+                if (moved & newMoved) break;
+
+                // Otherwise, go to the new location and set the ghost's bit to 1, and run
+                moved |= newMoved;
+                location = loc;
+                result.func();
+           }
+        } while (JSON.stringify(location) != JSON.stringify(origLoc));
     }
     ghostLoopI++;
     if (ghostLoopI >= ghostLoopSpeed) {
@@ -363,7 +388,7 @@ function pipeBoundsCheck(player) {
      * @type {Phaser.Tilemaps.Tile}
      */
 
-    let currentTile = map.getTileAtWorldXY(player.x, player.y, true, null, worldLayer);;
+    let currentTile = map.getTileAtWorldXY(player.x, player.y, true, null, worldLayer);
     let tileX = currentTile.x;
     let tileY = currentTile.y;
 
