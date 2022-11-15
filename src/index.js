@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import C4C from 'c4c-editor-and-interpreter';
-import interObj from './modules/interpFunc.js'
+import {createEditor, createEventListeners, initializeEditor} from './modules/interpFunc.js'
 
 import platform from './assets/platform.png'
 import dot from './assets/dot.png'
@@ -22,6 +22,8 @@ import directFunc from "./modules/directFunc";
 import worldFunc from "./modules/worldFunc"
 
 
+  
+
 const config = {
     type: Phaser.AUTO,
     parent: 'game',
@@ -40,12 +42,16 @@ const config = {
         preload: preload,
         create: create,
         update: update
-    }
+    },
+    dom: {
+        createContainer: true,
+      },
 };
 
 /**
  * @type {Phaser.Tilemaps.Tilemap}
 */
+
 
 
 const GHOSTS = ['pink', 'red', 'blue', 'yellow'];
@@ -70,21 +76,49 @@ var tileset;
 var worldLayer;
 var munch;
 
+// Location of ghost code step
+var location = [];
+
+// How often to run the ghost code
+var ghostLoopSpeed = 50;
+
+// Current index for running ghost code
+var ghostLoopI = 0;
+
+var ghostDotsPositionsArray = [
+    [25, 40],
+    [25, 380],
+    [425, 40],
+    [425, 380]
+];
+
+createEditor(C4C);
+
+let programText ='';
 var game = new Phaser.Game(config);
 
-
-document.getElementById('start-over').addEventListener('click', () => {
+// Helper function to restart game on death or on button press.
+function restartGame() {
     game.destroy(true);
     dots = null;
     score = 0;
     gameOver = false;
-    window.location.reload()
+    game = new Phaser.Game(config);
+    location = [0];
+    ghostLoopI = 0;
+};
 
-});
+document.getElementById('start-over').addEventListener('click', restartGame);
+    
 
 document.getElementById('submit').addEventListener('click', () => {
-    const programText = C4C.Editor.getText();
-    C4C.Interpreter.run(programText);
+    // Delete the old array
+    programText = C4C.Editor.getText();
+    ghostLoopSpeed = document.getElementById('loopSpeed').value;
+    ghostLoopI = 0;
+    location = [];
+    
+    
 });
 
 function preload() {
@@ -123,6 +157,10 @@ function preload() {
 }
 
 function create() {
+    initializeEditor(C4C);
+    createEventListeners(this);
+    
+    
     map = this.make.tilemap({
         key: "map"
     });
@@ -139,10 +177,16 @@ function create() {
     player.nextMove = null;
     player.isPowerful = false;
 
+
     let pinkGhost = this.physics.add.sprite(195, 230, 'pink-ghost');
+    pinkGhost.color = 'pink';
     let redGhost = this.physics.add.sprite(225, 230, 'red-ghost');
+    redGhost.color = 'red';
     let blueGhost = this.physics.add.sprite(255, 230, 'blue-ghost');
+    blueGhost.color = 'blue';
     let yellowGhost = this.physics.add.sprite(225, 185, 'yellow-ghost');
+    yellowGhost.color = 'yellow';
+    
 
     ghosts = this.physics.add.group();
 
@@ -160,7 +204,7 @@ function create() {
     this.physics.add.collider(ghosts, worldLayer);
     this.physics.add.collider(player, dots);
 
-    ghostFunc.setGhostSize(ghosts);
+    ghostFunc.setGhostSize(ghosts, false);
 
     // Player physics properties. Give the little guy a slight bounce.
 
@@ -204,6 +248,7 @@ function create() {
             }
         }
     }
+    
 
     dots = worldFunc.createDots(this, positionsArray);
 
@@ -240,7 +285,49 @@ function create() {
 }
 
 function update() {
+    if (ghostLoopI == 0) {
+        let origLoc = [...location];
+        // Which ghosts have moved so far, bitboard
+        // If the first bit is set, the first ghost has moved
+        // If the second bit is set, the second ghost has moved ...
+        let moved = 0b0000;
+        do  {
+            
+            // Run one step of ghost AI
+            let [result, loc] = C4C.Interpreter.stepRun(programText, location);
+            
+            
+            
+            // If at end of program, reset location
+            if (location[0] == 1) location = [];
 
+            // If a result is returned, probably run another step
+            if (result) {
+                let newMoved = 0b0000;
+                
+                // If the result is a ghost, set that ghost's bit to 1
+                let ghost = result.ghost;
+                if (ghost == 'pink') newMoved = 0b0001;
+                else if (ghost == 'red') newMoved = 0b0010;
+                else if (ghost == 'blue') newMoved = 0b0100;
+                else if (ghost == 'orange') newMoved = 0b1000;
+                else if (ghost == 'all') newMoved = 0b1111;
+
+                // If the ghost has already moved, stop running
+                if (moved & newMoved) break;
+
+                // Otherwise, go to the new location and set the ghost's bit to 1, and run
+                moved |= newMoved;
+                location = loc;
+                result.func();
+           }
+        } while (JSON.stringify(location) != JSON.stringify(origLoc));
+    }
+    ghostLoopI++;
+    if (ghostLoopI >= ghostLoopSpeed) {
+        ghostLoopI = 0;
+    }
+    
     if (gameOver) {
         return;
     }
@@ -301,7 +388,7 @@ function pipeBoundsCheck(player) {
      * @type {Phaser.Tilemaps.Tile}
      */
 
-    let currentTile = map.getTileAtWorldXY(player.x, player.y, true, null, worldLayer);;
+    let currentTile = map.getTileAtWorldXY(player.x, player.y, true, null, worldLayer);
     let tileX = currentTile.x;
     let tileY = currentTile.y;
 
@@ -323,6 +410,19 @@ function pipeBoundsCheck(player) {
     }
 }
 
+function winGame () {
+    //this.physics.pause();
+
+    player.setTint(0x00ff00);
+    player.anims.stop();
+
+    gameOver = true;
+    
+    setTimeout(() => alert("You Win!"), 200);
+    // Start the game over after 2 seconds
+    setTimeout(restartGame, 2000);
+}
+
 function eatDot(player, dot) {
     dot.disableBody(true, true);
 
@@ -334,15 +434,12 @@ function eatDot(player, dot) {
     munch.play();
 
     if ((dots.countActive(true) === 0) && ghostDots.countActive(true) === 0) {
-        dots = worldFunc.createDots(this, positionsArray);
-        ghostDots = worldFunc.createGhostDots(this, ghostDotsPositionsArray);
-        this.physics.add.overlap(player, dots, eatDot, null, this);
-        this.physics.add.overlap(player, ghostDots, eatGhostDot, null, this);
-
-        var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+        this.physics.pause();
+        winGame();
     }
 }
 
+let reEnableTimeout = null;
 function eatGhostDot(player, ghostDot) {
     ghostDot.disableBody(true, true);
 
@@ -354,32 +451,43 @@ function eatGhostDot(player, ghostDot) {
     ghosts.children.iterate((child) => {
         child.setTexture('vulnerable-ghost');
     });
-    ghostFunc.setGhostSize(ghosts);
+    ghostFunc.setGhostSize(ghosts, true);
 
     // Make player able to eat ghosts
     player.isPowerful = true;
 
     // Remake dots if they're all eaten
     if ((dots.countActive(true) === 0) && ghostDots.countActive(true) === 0) {
-        dots = worldFunc.createDots(this, positionsArray);
-        ghostDots = worldFunc.createGhostDots(this, ghostDotsPositionsArray);
-        this.physics.add.overlap(player, dots, eatDot, null, this);
-        this.physics.add.overlap(player, ghostDots, eatGhostDot, null, this);
+        this.physics.pause();
+        winGame();
 
         var x = (player.x < 400) ? Phaser.Math.Between(400, 800) : Phaser.Math.Between(0, 400);
+    } else {
+        // Get rid of the reEnable timeout
+        if (reEnableTimeout) {
+            clearTimeout(reEnableTimeout);
+        }
+        // Set the new timeout
+        reEnableTimeout = setTimeout(ghostFunc.enableGhosts, 10 * 1000);
     }
-
-    setTimeout(ghostFunc.enableGhosts, 4000);
 }
 
 function hitGhost(player, ghost) {
     if (player.isPowerful) {
         ghost.disableBody(true, true);
+        
+        // Remove ghost and then respawn it in the box
+        ghostFunc.respawnGhost(ghost);
+        score += 100;
+        
     } else {
         this.physics.pause();
 
         player.setTint(0xff0000);
+        player.anims.stop();
 
         gameOver = true;
+        // Start the game over after 2 seconds
+        setTimeout(restartGame, 2000);
     }
 }
