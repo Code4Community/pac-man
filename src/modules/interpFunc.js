@@ -44,65 +44,67 @@ const codeEditor = document.getElementById('code-editor');
 export const initializeEditor = (c4c) => {
     
     c4c.Interpreter.define('move', (item , dir) => {
+        return {ghost: item, func: () => {
+
+            let litem = item.toLowerCase()
+            let ldir = dir.toLowerCase()
+
+            var redChild = ghosts.children.entries[1]
+            var pinkChild = ghosts.children.entries[0]
+            var blueChild = ghosts.children.entries[2]
+            var yellowChild = ghosts.children.entries[3]
+
+            function getGhost(litem) {
+                if(litem == 'pink'){
+                    return pinkChild
+                } else if(litem == 'blue'){
+                    return blueChild
+                }
+                else if(litem == 'yellow'){
+                    return yellowChild
+                }
+                else if(litem == 'red'){
+                    return redChild
+                }
+                else{
+                    return '[*] Error'
+                }
+            }
+            
+            function getDir(ldir) {
+                if(ldir == 'down'){
+                    let cords = 'y'
+                    let ldir = 1
+                    return [cords , ldir]
+                } else if(ldir == 'left'){
+                    let cords = 'x'
+                    let ldir = -1
+                    return [cords , ldir]
+                }
+                else if(ldir == 'right'){
+                    let cords = 'x'
+                    let ldir = 1
+                    return [cords , ldir]
+                }
+                else if (ldir == 'up'){
+                    let cords = 'y'
+                    let ldir = -1
+                    return [cords , ldir]
+                }
+            }
+            
+            let direction = getDir(ldir)
+            //console.log(direction[0])
+
+            if(litem == 'all'){
+            ghosts.children.iterate((litem) => {
+                moveObj.setNextMove(litem, direction[0], direction[1]);
+            })
+            }else{
+                moveObj.setNextMove(getGhost(litem), direction[0], direction[1]);
+            }
         
-
-        let litem = item.toLowerCase()
-        let ldir = dir.toLowerCase()
-
-        var redChild = ghosts.children.entries[1]
-        var pinkChild = ghosts.children.entries[0]
-        var blueChild = ghosts.children.entries[2]
-        var yellowChild = ghosts.children.entries[3]
-
-        function getGhost(litem) {
-            if(litem == 'pink'){
-                return pinkChild
-            } else if(litem == 'blue'){
-                return blueChild
-            }
-            else if(litem == 'yellow'){
-                return yellowChild
-            }
-            else if(litem == 'red'){
-                return redChild
-            }
-            else{
-                return '[*] Error'
-            }
-        }
-        
-        function getDir(ldir) {
-            if(ldir == 'down'){
-                let cords = 'y'
-                let ldir = 1
-                return [cords , ldir]
-            } else if(ldir == 'left'){
-                let cords = 'x'
-                let ldir = -1
-                return [cords , ldir]
-            }
-            else if(ldir == 'right'){
-                let cords = 'x'
-                let ldir = 1
-                return [cords , ldir]
-            }
-            else if (ldir == 'up'){
-                let cords = 'y'
-                let ldir = -1
-                return [cords , ldir]
-            }
-        }
-        
-        let direction = getDir(ldir)
-        //console.log(direction[0])
-
-        if(litem == 'all'){
-        ghosts.children.iterate((litem) => {
-            moveObj.setNextMove(litem, direction[0], direction[1]);
-        })
-        }else{
-            moveObj.setNextMove(getGhost(litem), direction[0], direction[1]);
-        }
+        }}
     });
 
 
@@ -118,6 +120,14 @@ export const initializeEditor = (c4c) => {
                 
             }
         })
+    });
+
+    c4c.Interpreter.define("returnTrue", () => {
+        return true;
+    });
+
+    c4c.Interpreter.define("returnFalse", () => {
+        return false;
     });
     
 }
