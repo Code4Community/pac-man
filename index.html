@@ -3,6 +3,9 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>C4C PacMan</title>
+		<link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css"/>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+
 		<style>
 			html{
 				overflow-x: hidden;
@@ -69,6 +72,15 @@
 			font-family: Arial, Helvetica, sans-serif;
 			text-align: center;
 			}
+			.multiplayer-menu {
+				width: 100%;
+				text-align: center;
+				margin-bottom: 30px;
+			}
+			.multiplayer-menu > div {
+				display: inline-block;
+				vertical-align: middle;
+			}
 		</style>
 	</head>
 	<body>
@@ -125,6 +137,8 @@
 				</p>
 				<button style="background-color: #f42727;width: 100%;height: 30px;border-radius: 125%;" id="start-over" type="button" class="btn btn-primary">Start Over</button>
                 <p>
+
+				
 
 				
                     <br>
@@ -244,5 +258,31 @@
 			// }
 		</script>
 
+<!-- Multiplayer screen-->
+
+<div class="multiplayer-menu container-fluid">
+	<h1 style=" color: white;">Multiplayer Menu</h1>
+	<div>
+		
+		<input type="text" class="" placeholder="game code..." id = "game-code">
+		<button type="text" id = "load">Load</button>
+	</div>
+	<div>
+		
+		or <button id = "publish">Publish</button>
+	</div>
+
+
+  </div>
+ 
+
 	</body>
+
+	<!-- Pyscript and Bootstrap libraries embedded below, pls don't touch them :)-->
+
+	<script defer src="https://pyscript.net/latest/pyscript.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js" integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk" crossorigin="anonymous"></script>
+
 </html>

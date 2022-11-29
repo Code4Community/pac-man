@@ -44,6 +44,7 @@
         "webpack-merge": "^5.8.0"
     },
     "dependencies": {
+        "aws-sdk": "^2.1254.0",
         "c4c-editor-and-interpreter": "github:code4community/code-editor-and-interpreter",
         "phaser": "^3.55.2"
     }
