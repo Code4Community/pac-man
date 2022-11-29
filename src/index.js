@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import C4C from 'c4c-editor-and-interpreter';
 import {createEditor, createEventListeners, initializeEditor} from './modules/interpFunc.js'
+import { loadProgram, publish } from "./modules/GameManager.js";
 
 import platform from './assets/platform.png'
 import dot from './assets/dot.png'
@@ -109,6 +110,25 @@ function restartGame() {
 };
 
 document.getElementById('start-over').addEventListener('click', restartGame);
+
+document.getElementById('publish').addEventListener('click', () => {
+    // Get the program text from the editor
+    let txt = C4C.Editor.getText();
+    let id = publish(txt);
+    alert("Your id is: " + id);
+
+});
+
+document.getElementById('load').addEventListener('click', () => {
+    let id = document.getElementById('game-code').value;
+    let txt = loadProgram(id);
+    if (txt) {
+        porgramText = txt;
+        C4C.Editor.setText(programText);
+    } else 
+        alert("Invalid id");
+});
+
     
 
 document.getElementById('submit').addEventListener('click', () => {

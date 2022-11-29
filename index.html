@@ -72,6 +72,15 @@
 			font-family: Arial, Helvetica, sans-serif;
 			text-align: center;
 			}
+			.multiplayer-menu {
+				width: 100%;
+				text-align: center;
+				margin-bottom: 30px;
+			}
+			.multiplayer-menu > div {
+				display: inline-block;
+				vertical-align: middle;
+			}
 		</style>
 	</head>
 	<body>
@@ -128,6 +137,8 @@
 				</p>
 				<button style="background-color: #f42727;width: 100%;height: 30px;border-radius: 125%;" id="start-over" type="button" class="btn btn-primary">Start Over</button>
                 <p>
+
+				
 
 				
                     <br>
@@ -249,11 +260,19 @@
 
 <!-- Multiplayer screen-->
 
-<div class="container-wrapper">
+<div class="multiplayer-menu container-fluid">
 	<h1 style=" color: white;">Multiplayer Menu</h1>
-	<h3 style="color: white;">Game Code</h3>
-	<input type="text" class="" placeholder="Enter multiplayer game code to join">
-	<button type="text" href-="">Connect</button>
+	<div>
+		
+		<input type="text" class="" placeholder="game code..." id = "game-code">
+		<button type="text" id = "load">Load</button>
+	</div>
+	<div>
+		
+		or <button id = "publish">Publish</button>
+	</div>
+
+
   </div>
  
 
