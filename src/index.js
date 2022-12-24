@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import C4C from 'c4c-editor-and-interpreter';
+import C4C from 'c4c-lib';
 import {createEditor, createEventListeners, initializeEditor} from './modules/interpFunc.js'
 import { loadProgram, publish } from "./modules/GameManager.js";
 

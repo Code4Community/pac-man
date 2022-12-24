@@ -45,7 +45,7 @@
     },
     "dependencies": {
         "aws-sdk": "^2.1254.0",
-        "c4c-editor-and-interpreter": "github:code4community/code-editor-and-interpreter",
+        "c4c-lib": "github:code4community/c4c-lib#0.1.0",
         "phaser": "^3.55.2"
     }
 }

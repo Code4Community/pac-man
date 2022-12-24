@@ -1,4 +1,4 @@
-// import C4C from 'c4c-editor-and-interpreter';
+// import C4C from 'c4c-lib';
 import moveObj from './moveFunc.js'
 
 
