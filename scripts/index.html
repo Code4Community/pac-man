@@ -1,0 +1,204 @@
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=0, user-scalable=no">
+
+      <link rel="icon" type="image/png" sizes="32x32" href="https://c4cosu.com/favicon.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="https://c4cosu.com/favicon.png">
+      <link rel="alternate" type="application/rss+xml" href="https://c4cosu.com/favicon.png" title="c4c">
+
+      <title>C4C PacMan</title>
+      <meta name="author" content="C4C">
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+      <link rel="stylesheet" href="css/style.css">
+
+      <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+      <script src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+
+   </head>
+   <body style="overflow-x: hidden;color: white;background: linear-gradient(to bottom right, #33ccff 0%, #ff99ff 100%);">
+      <main class="page-wrapper">
+         <header class="header navbar navbar-expand-lg bg-light shadow-sm fixed-top">
+            <div class="container px-3">
+                <a href="/" style="font-weight:500;" class="navbar-brand pe-3">
+               <img style="margin-right:15px;" src="https://c4cosu.com/favicon.png" width="47" alt="Silicon">C4C</a>
+               <div class="offcanvas offcanvas-end">
+                  <div class="offcanvas-body">
+                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                           <a href="/" class="nav-link">Home</a>
+                        </li>
+                        <li class="nav-item">
+                           <a href="/#games" class="nav-link">Games</a>
+                        </li>
+                        <li class="nav-item">
+                           <a href="/#info" class="nav-link">About</a>
+                        </li>
+                        <li class="nav-item">
+                           <a href="account" class="nav-link">Account</a>
+                        </li>
+                     </ul>
+                  </div>
+               </div>
+               <a id="loginc" href="/logout" style="display:none; text-decoration:none; color: darkgrey;">Logout</a>
+            </div>
+         </header>
+         <section>
+            <div class="xcontainer">
+               <div id="game">
+               </div>
+               <div class="code-container">
+                  <div class="column-center" id="code-editor">
+                     <a style="color: fff;">
+                        <p style="font-size: smaller;">
+                           <b style="font-size: medium;">Instructions:</b>
+                           Use the code editor below to tell the ghosts how to move.
+                        </p>
+                     </a>
+                  </div>
+                  <div class="column-right">
+
+                     <div style="margin-bottom: 55px;text-align:center;">
+
+                        <button onclick="moveup()" style="background: transparent;border-color: transparent;">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" style="color: #fff;"  fill="currentColor" class="bi bi-arrow-up-circle" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-7.5 3.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707V11.5z"></path>
+                           </svg>
+                        </button>
+
+                        <button onclick="movedown()" style="background: transparent;border-color: transparent;">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" style="color: #fff;"  fill="currentColor" class="bi bi-arrow-down-circle" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v5.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V4.5z"></path>
+                           </svg>
+                        </button>
+
+                        <button onclick="moveleft()" style="border-color: transparent;background: transparent;">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" style="color: #fff;"  fill="currentColor" class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z"></path>
+                           </svg>
+                        </button>
+
+                        <button onclick="moveright()" style="background: transparent;border-color: transparent;">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" style="color: #fff;"  fill="currentColor" class="bi bi-arrow-right-circle" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z"></path>
+                           </svg>
+                        </button>
+
+                     </div>
+
+                     <p style="font-weight: bold;">
+                        Update Game:
+                     </p>
+                     <select style="text-align: center;height: 35px;border-radius: 25px;width: 100%;" id="loopSpeed">
+                        <option value="50">Slow</option>
+                        <option value="25">Medium</option>
+                        <option value="10">Fast</option>
+                        <option value="1">Instant</option>
+                     </select>
+
+                        <p></p>
+                     <button style="background-color: #00a94d;width: 100%;height: 30px;font-family: system-ui;color: whitesmoke;border-radius: 25px;border-color: transparent;" onclick="saveCode();" id="submit" type="button" class="btn btn-success"><p style="margin-top: -5px;">Submit</p></button>
+                        <p></p>
+                     <button style="background-color: #aa1b1b;width: 100%;height: 30px;border-radius: 25px;font-family: system-ui;border-color: transparent;color: white;" id="start-over" type="button" class="btn btn-primary"><p style="margin-top: -5px;">Restart</p></button>
+                        <p></p>
+                     <button style="background-color: #181818;width: 100%;font-family: system-ui;color: whitesmoke;height: 30px;border-radius: 35px;border-color: transparent;" onclick="turnOn('help')" type="button" class="btn btn-primary"><p style="margin-top: -5px;">Instructions</p></button>
+                        <p></p>
+                     <button style="background-color: #e4a21c;width: 100%;font-family: system-ui;color: whitesmoke;height: 30px;border-radius: 35px;border-color: transparent;" onclick="turnOn('lead')" type="button" class="btn btn-primary"><p style="margin-top: -5px;">Leaderboard</p></button>
+                        <p></p>
+
+                   </div>
+               </div>
+            </div>
+            <div id="help" style="color: whitesmoke; overflow-y: auto; justify-content: center; width: 70%; height: 85%; background-color: rgba(174, 167, 236, 0.43); position: absolute; inset: 0px; margin: auto; display: none;">
+               <div style="margin: 10px 25px;">
+                  <b style="margin-left: 45%;font-family: system-ui;margin-right: 18%;"> Commands:</b>
+                  <button style="background-color: #bdb9b9;width: 25%;font-family: system-ui;color: whitesmoke;height: 30px;border-radius: 35px;border-color: transparent;" onclick="turnOff('help')" type="button" class="btn btn-primary">Back</button>
+                  <pre style="font-family: revert;"> 
+       <b>PacMan teaching procedure</b>
+       
+          • Play a normal round
+          • Hard code the ghosts to move in certain directions
+          • Have students code an if-statement to control ghost
+          • If statement based on where pac-man is
+          • While loop with if-statement inside
+          • Make sure ghost does not get stuck
+          • Maybe let them see the actual code for the normal game, quick blurb about AI idk
+          • Play with friends
+       
+       <b>Step 2 sample code:</b>
+       
+          move(right, 3)
+       
+          move(down, 2)
+       
+          etc.
+       
+       <b>Step 3 sample code:</b>
+       
+          if(ghost can move right)
+       
+            move('all', 'right')
+       
+          else if(ghost can move left)
+       
+            move('all, 'left')
+       
+          etc
+       
+       <b>Step 4:</b>
+       
+          If (pac man to the right and can move right)
+       
+            move right
+       
+          Else if (pac man to the left and can move left)
+       
+            Move left
+       
+          Etc
+       
+       
+       <b>Step 5:</b>
+       
+          While (not at end of game)
+       
+          If (pac man to the right and can move right)
+       
+          move right
+       
+          Else if (pac man to the left and can move left)
+       
+          Move left
+       
+          etc with up and down
+            </pre>
+               </div>
+            </div>
+            <div id="lead" style="display: none;color: whitesmoke;overflow-y: auto;display: none;justify-content: center;width: 70%;height: 85%;background-color: rgb(174 167 236 / 43%);position: absolute;inset: 0px;margin: auto;">
+               <div style="margin: 10px 25px;">
+                  <b style="margin-left: 45%;font-family: system-ui;margin-right: 18%;"> Commands:</b>
+                  <button style="background-color: #bdb9b9;width: 25%;font-family: system-ui;color: whitesmoke;height: 30px;border-radius: 35px;border-color: transparent;" onclick="turnOff('lead')" type="button" class="btn btn-primary">Back</button>
+                  <table style="width: 100%; margin-top: 15px; height: 70%;">
+                     <tbody>
+                        <tr style="height:100%; display:flex">
+                           <td style="width: 50%;">
+                              <center> <b style="font-family: sans-serif;color: whitesmoke;">Pacman Leaderboard</b> </center>
+                              <ol id="pac-lead">
+                              </ol>
+                           </td>
+                           <td style="width: 50%;">
+                              <center> <b style="font-family: sans-serif;color: whitesmoke;">Ghost Leaderboard</b> </center>
+                              <ol id="ghost-lead">
+                              </ol>
+                           </td>
+                        </tr>
+                     </tbody>
+                  </table>
+               </div>
+            </div>
+         </section>
+      </main>
+      <script src="/dist/main.js"></script>
+      <script src="/js/script.js"></script>
+   </body>
+</html>
