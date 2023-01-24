@@ -9,11 +9,11 @@ Students will write code to control the ghosts. They will learn the difference b
 1. Clone this repository
 1. Install [Node.js and npm](https://nodejs.org/en/download/)
 1. Install dependencies: `npm i`
-1. Run the application: `npm run serve`
+1. Run the application: `node app.js`
 1. Open the URL given by Node in your browser (e.g., http://localhost:8080)
 
 ## Deployment
-1. `npm run deploy`
+> `https://github.com/Code4Community/pac-man`
 
 ## Contribution Policy
 This project is closed to outside contributions while it is in active development.

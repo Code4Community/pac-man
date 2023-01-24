@@ -1,0 +1,12 @@
+// Logging is saving the game in a coded form so that in case the restore doesn't work properly, manually restoring of
+// the game is possible by selecting the log file from the pause menu of the game.
+
+{logging.message} + {game.state} 
+
+{logging.date + logging.time}
+
+{game.score} + {game.state}
+
+{game.cheese_left}
+
+{logging.footer.message}
