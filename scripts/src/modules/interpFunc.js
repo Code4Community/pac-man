@@ -50,11 +50,6 @@ export const initializeEditor = (c4c) => {
 
             let litem = item.toLowerCase()
             let ldir = dir.toLowerCase()
-
-            var redChild = ghosts.children.entries[1]
-            var pinkChild = ghosts.children.entries[0]
-            var blueChild = ghosts.children.entries[2]
-            var yellowChild = ghosts.children.entries[3]
             
             let direction = getDir(ldir)
             //console.log(direction[0])
@@ -172,6 +167,10 @@ function pickRandomDirection () {
 
 
 function getGhost(litem) {
+    var redChild = ghosts.children.entries[1]
+            var pinkChild = ghosts.children.entries[0]
+            var blueChild = ghosts.children.entries[2]
+            var yellowChild = ghosts.children.entries[3]
     if(litem == 'pink'){
         return pinkChild
     } else if(litem == 'blue'){
