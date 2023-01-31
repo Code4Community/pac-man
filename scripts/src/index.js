@@ -1,7 +1,6 @@
 import Phaser from "phaser";
 import C4C from 'c4c-lib';
 import {createEditor, createEventListeners, initializeEditor} from './modules/interpFunc.js'
-import { loadProgram, publish } from "./modules/GameManager.js";
 
 import platform from './assets/platform.png'
 import dot from './assets/dot.png'
@@ -36,7 +35,7 @@ const config = {
             gravity: {
                 y: 0
             },
-            debug: true
+            debug: false
         }
     },
     scene: {
@@ -110,26 +109,6 @@ function restartGame() {
 };
 
 document.getElementById('start-over').addEventListener('click', restartGame);
-
-document.getElementById('publish').addEventListener('click', () => {
-    // Get the program text from the editor
-    let txt = C4C.Editor.getText();
-    let id = publish(txt);
-    alert("Your id is: " + id);
-
-});
-
-document.getElementById('load').addEventListener('click', () => {
-    let id = document.getElementById('game-code').value;
-    let txt = loadProgram(id);
-    if (txt) {
-        porgramText = txt;
-        C4C.Editor.setText(programText);
-    } else 
-        alert("Invalid id");
-});
-
-    
 
 document.getElementById('submit').addEventListener('click', () => {
     // Delete the old array
@@ -301,7 +280,6 @@ function create() {
     if (!isProduction) {
         window.player = player;
         window.ghosts = ghosts;
-        window.ph = this;
     }
 }
 
@@ -333,6 +311,7 @@ function update() {
                 else if (ghost == 'blue') newMoved = 0b0100;
                 else if (ghost == 'orange') newMoved = 0b1000;
                 else if (ghost == 'all') newMoved = 0b1111;
+
 
                 // If the ghost has already moved, stop running
                 if (moved & newMoved) break;
@@ -413,7 +392,7 @@ function pipeBoundsCheck(player) {
     let tileX = currentTile.x;
     let tileY = currentTile.y;
 
-    /* */
+
     /* get the tile that pacman wants to enter */
     if (direction == 'x') {
         if (sign == 1) {
