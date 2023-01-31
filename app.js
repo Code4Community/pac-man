@@ -4,9 +4,9 @@ const express = require('express');
 const path = require('path')
 const crypto = require("crypto");
 
-const { execFileSync } = require('child_process');
+const { exec } = require('shelljs');
 
-const child = execFileSync('sh', ['build.sh'])
+console.log(exec('./build.sh'));
 
 const User = mongoose.model('User', {
    name: {
