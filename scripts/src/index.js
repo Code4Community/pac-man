@@ -291,13 +291,15 @@ function update() {
         // If the second bit is set, the second ghost has moved ...
         let moved = 0b0000;
         do  {
-            
+            // // If at end of program, break (ONCE LOOPS WORK)
+            // if (location[0] == 1) break;
+
             // Run one step of ghost AI
             let [result, loc] = C4C.Interpreter.stepRun(programText, location);
             
             
             
-            // If at end of program, reset location
+            // If at end of program, reset location (REMOVE LATER)
             if (location[0] == 1) location = [];
 
             // If a result is returned, probably run another step
