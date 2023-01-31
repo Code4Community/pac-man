@@ -333,6 +333,7 @@ function update() {
                 else if (ghost == 'blue') newMoved = 0b0100;
                 else if (ghost == 'orange') newMoved = 0b1000;
                 else if (ghost == 'all') newMoved = 0b1111;
+                else newMoved = 0;
 
                 // If the ghost has already moved, stop running
                 if (moved & newMoved) break;
