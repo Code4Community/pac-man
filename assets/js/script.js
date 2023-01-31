@@ -6,12 +6,20 @@
     [  Version: 1.23         ]
     [========================]
 
+
+
+    CONSOLE FILTER: 
+
+    -url:https://www.youtube.com/ptracking?html5=1&video_id=TlB_eWDSMt4&cpn=EvxaWiVgia0FDEEy&ei=pkzYY9LxJ5G1lAOM_ZvQAw&ptk=youtube_single&oid=dd27ZRUsSZTSZjk8fxaoWQ&ptchn=Wv7vMbMWH4-V0ZXdmDpPBA&pltype=content -url:https://www.youtube.com/api/stats/qoe?fmt=398&afmt=251&cpn=EvxaWiVgia0FDEEy&el=embedded&ns=yt&fexp=23983296%2C24004644%2C24007246%2C24080738%2C24135310%2C24169501%2C24219381%2C24255163%2C24415864%2C24436456%2C24439360%2C24451033&cl=501313814&seq=1&docid=TlB_eWDSMt4&ei=pkzYY9LxJ5G1lAOM_ZvQAw&event=streamingstats&plid=AAXzgzebA67748Xl&referrer=https%3A%2F%2Fwww.youtube.com%2Fembed%2FTlB_eWDSMt4&cbrand=apple&cbr=Opera&cbrver=94.0.0.0&c=WEB_EMBEDDED_PLAYER&cver=1.20230111.01.00&cplayer=UNIPLAYER&cos=Macintosh&cosver=10_15_7&cplatform=DESKTOP&vps=0.000:N,0.012:B,0.231:B,0.231:B&cmt=0.012:0.000,0.231:0.000&afs=0.231:251::i&vfs=0.231:398:398::r&view=0.231:1093:405:1.600000023841858&bwe=0.231:3580335&bat=0.231:1:1&vis=0.231:0&bh=0.231:0.000 -url:https://www.youtube.com/api/stats/qoe?fmt=398&afmt=251&cpn=EvxaWiVgia0FDEEy&el=embedded&ns=yt&fexp=23983296%2C24004644%2C24007246%2C24080738%2C24135310%2C24169501%2C24219381%2C24255163%2C24415864%2C24436456%2C24439360%2C24451033&cl=501313814&seq=2&docid=TlB_eWDSMt4&ei=pkzYY9LxJ5G1lAOM_ZvQAw&event=streamingstats&plid=AAXzgzebA67748Xl&referrer=https%3A%2F%2Fwww.youtube.com%2Fembed%2FTlB_eWDSMt4&cbrand=apple&cbr=Opera&cbrver=94.0.0.0&c=WEB_EMBEDDED_PLAYER&cver=1.20230111.01.00&cplayer=UNIPLAYER&cos=Macintosh&cosver=10_15_7&cplatform=DESKTOP&bh=0.400:7.801,10.001:28.870&cmt=0.400:0.001,1.152:0.724,1.552:1.124,10.001:1.131&vps=0.400:PL,1.552:PA&user_intent=0&bwm=10.001:2854199:0.453&bwe=10.001:3089992&bat=10.001:1:1&vis=10.001:3&df=10.001:0 -url:https://www.youtube.com/pagead/viewthroughconversion/962985656/?backend=innertube&cname=56&cver=20230111&foc_id=Wv7vMbMWH4-V0ZXdmDpPBA&label=followon_view&ptype=no_rmkt&random=275147207 -url:https://static.doubleclick.net/instream/ad_status.js -url:https://googleads.g.doubleclick.net/pagead/id -url:https://www.youtube.com/youtubei/v1/log_event?alt=json&key=AIzaSyAO_FJ2SlqU8Q4STEHLGCilw_Y9_11qcW8 -url:https://play.google.com/log?format=json&hasfast=true&authuser=0
+
 */
 
 var login = document.querySelector('#login');
 var regis = document.querySelector('#register');
 var updat = document.querySelector('#update');
 var delet = document.querySelector('#delete');
+
+
 
 console.clear()
 console.log(`
@@ -25,6 +33,7 @@ console.log(`
   <-[  Active  ]-> 
 
 `)
+
 
 if(login) {
     login.addEventListener('click', (e) => {
@@ -378,6 +387,54 @@ function chechLogin() {
             window.location.replace('/login');
         }
     }
+}
+
+function previous() {
+    let old =  document.getElementsByClassName("r-videos-active")[0];
+
+    let newV = document.getElementById(JSON.stringify(parseInt(old.id) - 1))
+
+
+    if(!newV){
+        old.style.display = "none"
+        old.className = "row r-videos"
+
+        let fix = document.getElementById('0');
+        fix.style.display = "flex";
+        fix.className = "row r-videos-active"
+    
+    } else{
+
+    old.style.display = "none"
+    old.className = "row r-videos"
+
+
+    newV.style.display = "flex";
+    newV.className = "row r-videos-active"
+    }
+}
+
+function next() {
+    
+        let old =  document.getElementsByClassName("r-videos-active")[0];
+
+        let newV = document.getElementById(JSON.stringify(parseInt(old.id) + 1))
+
+
+        if(!newV){
+            let fix = document.getElementById('0');
+            fix.style.display = "flex";
+            fix.className = "row r-videos-active"
+        } else{
+
+        old.style.display = "none"
+        old.className = "row r-videos"
+
+
+        newV.style.display = "flex";
+        newV.className = "row r-videos-active"
+        }
+
 }
 
 chechLogin();

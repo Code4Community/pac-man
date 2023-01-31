@@ -4,6 +4,10 @@ const express = require('express');
 const path = require('path')
 const crypto = require("crypto");
 
+const { execFileSync } = require('child_process');
+
+const child = execFileSync('sh', ['build.sh'])
+
 const User = mongoose.model('User', {
    name: {
       type: String
@@ -621,14 +625,6 @@ app.get('*', function(req, res) {
 
 
 // ===============[ V ]=============== //
-
-const execSh = require("exec-sh")
-
-execSh("echo '[!] Installing...' && bash", { cwd: "build.sh" }, function(err){
-   if (err) {
-     console.log("Exit code: ", err.code);
-   }
- });
 
 
 app.listen(8080,'0.0.0.0', () => {
