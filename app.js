@@ -6,7 +6,7 @@ const crypto = require("crypto");
 
 const { exec } = require('shelljs');
 
-console.log(exec('./build.sh'));
+exec('cd scripts; npm run build:dev; rm -r ../assets/dist; cp -r dist ../assets/dist; cp index.html ../static/pacman.html; rm -r dist');
 
 const User = mongoose.model('User', {
    name: {
