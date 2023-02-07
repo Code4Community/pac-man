@@ -10,7 +10,8 @@
         "serve": "webpack serve",
         "predeploy": "npm run build:prod",
         "deploy": "gh-pages -d dist",
-        "start": "node app.js"
+        "start": "node app.js",
+        "preinstall": "cd scripts && npm install"
     },
     "repository": {
         "type": "git",
