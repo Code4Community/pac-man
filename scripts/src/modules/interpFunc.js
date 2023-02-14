@@ -3,6 +3,19 @@ const DIRECTIONS = ['up', 'right', 'down', 'left'];
 // import C4C from 'c4c-lib';
 import moveObj from './moveFunc.js'
 
+/**
+ * Enumeration of the ghost colors for easy access.
+ * 
+ * @readonly
+ * 
+ */
+export const colorEnum = {
+    'yellow': 0,
+    'pink': 1,
+    'blue': 2,
+    'red': 3
+}
+
 
 const theme = {
     "&": {
@@ -45,7 +58,9 @@ const codeEditor = document.getElementById('code-editor');
 
 export const initializeEditor = (c4c) => {
     
-    c4c.Interpreter.define('move', (item , dir) => {
+    
+
+    c4c.Interpreter.define('moveOne', (item , dir) => {
         return {ghost: item.toLowerCase(), func: () => {
 
             let litem = item.toLowerCase()
@@ -61,6 +76,32 @@ export const initializeEditor = (c4c) => {
             }else{
                 moveObj.setNextMove(getGhost(litem), direction[0], direction[1]);
             }
+        
+        }}
+    });
+
+    c4c.Interpreter.define('move', (dir) => {
+        return {ghost: 'all', func: () => {
+            // Check if dir is an array representation
+            if (dir.includes(',')) {
+                // If so, make it an actual array
+                dir = dir.split(',');
+                
+            } else {
+                // If not, make it an array
+                dir = [dir, dir, dir, dir];
+            }
+            let direction = dir.map((d) => getDir(d.toLowerCase()));
+            //console.log(direction[0])
+
+            // Loop through colorEnum
+            for (let color in colorEnum) {
+                // Get the ghost
+                let ghost = getGhost(color);
+                // Move the ghost
+                moveObj.setNextMove(ghost, ...direction[colorEnum[color]]);
+            }
+
         
         }}
     });
