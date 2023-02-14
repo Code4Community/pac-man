@@ -62,20 +62,28 @@ export const initializeEditor = (c4c) => {
 
     c4c.Interpreter.define('moveOne', (item , dir) => {
         return {ghost: item.toLowerCase(), func: () => {
-
-            let litem = item.toLowerCase()
-            let ldir = dir.toLowerCase()
-            
-            let direction = getDir(ldir)
+            let litem = item.toLowerCase();
+            // Check if dir is an array representation
+            if (dir.includes(',')) {
+                // If so, make it an actual array
+                dir = dir.split(',');
+                
+            } else {
+                // If not, make it an array
+                dir = [dir, dir, dir, dir];
+            }
+            let direction = dir.map((d) => getDir(d.toLowerCase()));
             //console.log(direction[0])
 
-            if(litem == 'all'){
-            ghosts.children.iterate((litem) => {
-                moveObj.setNextMove(litem, direction[0], direction[1]);
-            })
-            }else{
-                moveObj.setNextMove(getGhost(litem), direction[0], direction[1]);
+            // Loop through colorEnum
+            for (let color in colorEnum) {
+                // Get the ghost
+                let ghost = getGhost(color);
+                // Move the ghost
+                moveObj.setNextMove(ghost, ...direction[colorEnum[color]]);
             }
+
+            moveObj.setNextMove(getGhost(litem), ...direction[colorEnum[litem]]);
         
         }}
     });
