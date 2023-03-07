@@ -114,7 +114,25 @@ export const initializeEditor = (c4c) => {
         }}
     });
 
+    c4c.Interpreter.define('getRandomDirection', () => {
+       
+        // Get 4 random directions and return as a string representation of an array
+        let directions = [];
+        for (let i = 0; i < 4; i++) {
+            directions.push(DIRECTIONS[Math.floor(Math.random() * 4)]);
+        }
+        return directions.join(',');
+    });
 
+    c4c.Interpreter.define('getDirectionToPacman', () => {
+       
+        // Get 4 random directions and return as a string representation of an array
+        let directions = [];
+        for (let color in colorEnum) {
+            directions.push(direction(color));
+        }
+        return directions.join(',');
+    });
 
     c4c.Interpreter.define("rotate", () => {
         
@@ -256,4 +274,10 @@ function getDir(ldir) {
         let ldir = -1
         return [cords , ldir]
     }
+}
+
+
+// Scan code to see if works
+function scanCode(code) {
+    return works
 }

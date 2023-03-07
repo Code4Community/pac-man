@@ -3,10 +3,13 @@ const mongoose = require('mongoose');
 const express = require('express');
 const path = require('path')
 const crypto = require("crypto");
+const Os = require('os');
 
 const { exec } = require('shelljs');
-
-exec('cd scripts; npm run build:dev; rm -r ../assets/dist; cp -r dist ../assets/dist; cp index.html ../static/pacman.html; rm -r dist');
+if (Os.platform().includes('win')) 
+   exec('powershell "cd scripts; npm run build:dev; rm -r ../assets/dist; cp -r dist ../assets/dist; cp index.html ../static/pacman.html; rm -r dist"');
+else
+   exec('cd scripts; npm run build:dev; rm -r ../assets/dist; cp -r dist ../assets/dist; cp index.html ../static/pacman.html; rm -r dist');
 
 const User = mongoose.model('User', {
    name: {

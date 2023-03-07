@@ -111,10 +111,23 @@ function restartGame() {
 document.getElementById('start-over').addEventListener('click', restartGame);
 
 document.getElementById('submit').addEventListener('click', () => {
-    // Delete the old array
-    programText = C4C.Editor.getText();
+    // Get current text
+    let newText = C4C.Editor.getText();
+
+    // Make sure there's no errors
+    C4C.Interpreter.check(newText, (err, result) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+    });
+
+    // Replace programText with newText
+    programText = newText;
     ghostLoopSpeed = document.getElementById('loopSpeed').value;
     ghostLoopI = 0;
+
+    // Put the step location back at the beginning
     location = [];
     
     
@@ -291,27 +304,20 @@ function update() {
         // If the second bit is set, the second ghost has moved ...
         let moved = 0b0000;
         do  {
-            // If at end of program, break (ONCE LOOPS WORK)
+            // If at end of program, break
             if (location[0] == 1) break;
 
             // Run one step of ghost AI
+            
             let [result, loc] = C4C.Interpreter.stepRun(programText, location);
             
-            
-            
-            // If at end of program, reset location (REMOVE LATER)
-            // if (location[0] == 1) location = [];
 
             // If a result is returned, probably run another step
             if (result) {
                 let newMoved = 0b0000;
                 
                 // If the result is a ghost, set that ghost's bit to 1
-                let ghost = result.ghost;
-                if (ghost == 'pink') newMoved = 0b0001;
-                else if (ghost == 'red') newMoved = 0b0010;
-                else if (ghost == 'blue') newMoved = 0b0100;
-                else if (ghost == 'orange') newMoved = 0b1000;
+                let ghost = result.ghost || 'none';
                 if (ghost == 'all') newMoved = 0b1111;
                 else if (ghost in colorEnum) newMoved = 1 << colorEnum[ghost];
 
@@ -322,7 +328,8 @@ function update() {
                 // Otherwise, go to the new location and set the ghost's bit to 1, and run
                 moved |= newMoved;
                 location = loc;
-                result.func();
+                if (result.func)
+                    result.func();
            }
         } while (JSON.stringify(location) != JSON.stringify(origLoc));
     }
