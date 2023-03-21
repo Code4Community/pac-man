@@ -77,7 +77,8 @@ var worldLayer;
 var munch;
 
 // Location of ghost code step
-var location = [];
+var location = {};
+GHOSTS.forEach(ghost => location[ghost] = []);
 
 // How often to run the ghost code
 var ghostLoopSpeed = 50;
@@ -104,7 +105,7 @@ function restartGame() {
     score = 0;
     gameOver = false;
     game = new Phaser.Game(config);
-    location = [0];
+    for (let x in location) location[x] = [0];
     ghostLoopI = 0;
 };
 
@@ -127,9 +128,8 @@ document.getElementById('submit').addEventListener('click', () => {
     ghostLoopSpeed = document.getElementById('loopSpeed').value;
     ghostLoopI = 0;
 
-    // Put the step location back at the beginning
-    location = [];
-    
+    // Put the step location back at the beginning    
+    for (let x in location) location[x] = [];
     
 });
 
@@ -296,42 +296,49 @@ function create() {
     }
 }
 
-function update() {
-    if (ghostLoopI == 0) {
-        let origLoc = [...location];
+
+// ----------------
+function runGhostCode(color) {
+    let origLoc = [...location];
         // Which ghosts have moved so far, bitboard
         // If the first bit is set, the first ghost has moved
         // If the second bit is set, the second ghost has moved ...
-        let moved = 0b0000;
-        do  {
-            // If at end of program, break
-            if (location[0] == 1) break;
 
-            // Run one step of ghost AI
+    do  {
+        // If at end of program, break
+        if (location[0] == 1) break;
+
+        // Run one step of ghost AI
+        
+        let [result, loc] = C4C.Interpreter.stepRun(programText, location);
+        
+
+        // If a result is returned, probably run another step
+        if (result) {
+            let newMoved = 0b0000;
             
-            let [result, loc] = C4C.Interpreter.stepRun(programText, location);
-            
-
-            // If a result is returned, probably run another step
-            if (result) {
-                let newMoved = 0b0000;
-                
-                // If the result is a ghost, set that ghost's bit to 1
-                let ghost = result.ghost || 'none';
-                if (ghost == 'all') newMoved = 0b1111;
-                else if (ghost in colorEnum) newMoved = 1 << colorEnum[ghost];
+            // If the result is a ghost, set that ghost's bit to 1
+            let ghost = result.ghost || 'none';
+            if (ghost == 'all') newMoved = 0b1111;
+            else if (ghost in colorEnum) newMoved = 1 << colorEnum[ghost];
 
 
-                // If the ghost has already moved, stop running
-                if (moved & newMoved) break;
+            // If the ghost has already moved, stop running
+            if (moved & newMoved) break;
 
-                // Otherwise, go to the new location and set the ghost's bit to 1, and run
-                moved |= newMoved;
-                location = loc;
-                if (result.func)
-                    result.func();
-           }
-        } while (JSON.stringify(location) != JSON.stringify(origLoc));
+            // Otherwise, go to the new location and set the ghost's bit to 1, and run
+            moved |= newMoved;
+            location = loc;
+            if (result.func)
+                result.func();
+        }
+    } while (JSON.stringify(location) != JSON.stringify(origLoc));
+}
+// ----------------
+
+function update() {
+    if (ghostLoopI == 0) {
+        GHOSTS.forEach(ghost => runGhostCode(ghost));
     }
     ghostLoopI++;
     if (ghostLoopI >= ghostLoopSpeed) {

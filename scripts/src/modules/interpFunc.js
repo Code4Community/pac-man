@@ -1,5 +1,6 @@
 const DIRECTIONS = ['up', 'right', 'down', 'left'];
 
+
 // import C4C from 'c4c-lib';
 import moveObj from './moveFunc.js'
 
@@ -14,6 +15,13 @@ export const colorEnum = {
     'pink': 1,
     'blue': 2,
     'red': 3
+}
+
+export const dirEnum = {
+    0: 'up',
+    1: 'right',
+    2: 'down',
+    3: 'left'
 }
 
 
@@ -94,13 +102,14 @@ export const initializeEditor = (c4c) => {
             if (dir.includes(',')) {
                 // If so, make it an actual array
                 dir = dir.split(',');
+                console.log(dir)
                 
             } else {
                 // If not, make it an array
                 dir = [dir, dir, dir, dir];
             }
             let direction = dir.map((d) => getDir(d.toLowerCase()));
-            //console.log(direction[0])
+            // console.log(direction)
 
             // Loop through colorEnum
             for (let color in colorEnum) {
@@ -108,6 +117,7 @@ export const initializeEditor = (c4c) => {
                 let ghost = getGhost(color);
                 // Move the ghost
                 moveObj.setNextMove(ghost, ...direction[colorEnum[color]]);
+                // console.log(...direction[colorEnum[color]])
             }
 
         
@@ -155,8 +165,39 @@ export const initializeEditor = (c4c) => {
         return false;
     });
     
+    // =====
+
+    c4c.Interpreter.define("randomDirection", () => {
+        return {ghost: 'all', func: () => {
+            var ranNum1 = Math.floor(Math.random() * 4);
+            var ranNum2 = Math.floor(Math.random() * 4);
+            var ranNum3 = Math.floor(Math.random() * 4);
+            var ranNum4 = Math.floor(Math.random() * 4);
+
+            let dir1 = dirEnum[ranNum1];
+            let dir2 = dirEnum[ranNum2];
+            let dir3 = dirEnum[ranNum3];
+            let dir4 = dirEnum[ranNum4];
+            //they all generate the same number, fix that
+
+            let dir = [dir1, dir2, dir3, dir4];
+            console.log(dir)
+
+            let direction = dir.map((d) => getDir(d))
+            // console.log(direction, "my function")
+
+            for (let color in colorEnum) {
+                let ghost = getGhost(color);
+                moveObj.setNextMove(ghost, ...direction[colorEnum[color]])
+            }
+            
+        }}
+    })
+
+    // =====
+
+
 }
-// =====
 
 
 
