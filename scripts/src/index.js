@@ -76,9 +76,10 @@ var tileset;
 var worldLayer;
 var munch;
 
-// Location of ghost code step
-var location = {};
-GHOSTS.forEach(ghost => location[ghost] = []);
+
+// Runners for C4C-lib
+var runners = {};
+GHOSTS.forEach(color => {runners[color] = C4C.Runner.createRunner(); runners[color].namespace.set('color', color)});
 
 // How often to run the ghost code
 var ghostLoopSpeed = 50;
@@ -105,7 +106,10 @@ function restartGame() {
     score = 0;
     gameOver = false;
     game = new Phaser.Game(config);
-    for (let x in location) location[x] = [0];
+    // Reset every runner
+    for (let x in runners) {
+        runners[x].reset();
+    }
     ghostLoopI = 0;
 };
 
@@ -128,8 +132,12 @@ document.getElementById('submit').addEventListener('click', () => {
     ghostLoopSpeed = document.getElementById('loopSpeed').value;
     ghostLoopI = 0;
 
-    // Put the step location back at the beginning    
-    for (let x in location) location[x] = [];
+    // Reset the runners
+    for (let x in runners) {
+        runners[x].setProgram(programText);
+        runners[x].reset();
+    }
+
     
 });
 
@@ -299,40 +307,28 @@ function create() {
 
 // ----------------
 function runGhostCode(color) {
-    let origLoc = [...location];
-        // Which ghosts have moved so far, bitboard
-        // If the first bit is set, the first ghost has moved
-        // If the second bit is set, the second ghost has moved ...
+    // Get the runner's current location
+    let origLoc = runners[color].location;
+    console.log(origLoc);
+    let maxSteps = 100;
 
     do  {
-        // If at end of program, break
-        if (location[0] == 1) break;
-
         // Run one step of ghost AI
-        
-        let [result, loc] = C4C.Interpreter.stepRun(programText, location);
-        
-
+        runners[color].step();
+        let result = runners[color].result;
         // If a result is returned, probably run another step
         if (result) {
-            let newMoved = 0b0000;
-            
             // If the result is a ghost, set that ghost's bit to 1
             let ghost = result.ghost || 'none';
-            if (ghost == 'all') newMoved = 0b1111;
-            else if (ghost in colorEnum) newMoved = 1 << colorEnum[ghost];
-
-
-            // If the ghost has already moved, stop running
-            if (moved & newMoved) break;
-
-            // Otherwise, go to the new location and set the ghost's bit to 1, and run
-            moved |= newMoved;
-            location = loc;
-            if (result.func)
-                result.func();
+            if (ghost === 'all' || ghost === color){
+                if (result.func){
+                    result.func(color);
+                }
+                break;
+            }
         }
-    } while (JSON.stringify(location) != JSON.stringify(origLoc));
+        maxSteps--;
+    } while (maxSteps > 0 && JSON.stringify(runners[color].location) != JSON.stringify(origLoc));
 }
 // ----------------
 

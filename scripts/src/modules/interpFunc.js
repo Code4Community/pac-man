@@ -69,79 +69,21 @@ export const initializeEditor = (c4c) => {
     
 
     c4c.Interpreter.define('moveOne', (item , dir) => {
-        return {ghost: item.toLowerCase(), func: () => {
-            let litem = item.toLowerCase();
-            // Check if dir is an array representation
-            if (dir.includes(',')) {
-                // If so, make it an actual array
-                dir = dir.split(',');
-                
-            } else {
-                // If not, make it an array
-                dir = [dir, dir, dir, dir];
-            }
-            let direction = dir.map((d) => getDir(d.toLowerCase()));
-            //console.log(direction[0])
-
-            // Loop through colorEnum
-            for (let color in colorEnum) {
-                // Get the ghost
-                let ghost = getGhost(color);
-                // Move the ghost
-                moveObj.setNextMove(ghost, ...direction[colorEnum[color]]);
-            }
-
-            moveObj.setNextMove(getGhost(litem), ...direction[colorEnum[litem]]);
-        
-        }}
+        return {ghost: item.toLowerCase(), func: moveGivenColor(dir)};
     });
 
     c4c.Interpreter.define('move', (dir) => {
-        return {ghost: 'all', func: () => {
-            // Check if dir is an array representation
-            if (dir.includes(',')) {
-                // If so, make it an actual array
-                dir = dir.split(',');
-                console.log(dir)
-                
-            } else {
-                // If not, make it an array
-                dir = [dir, dir, dir, dir];
-            }
-            let direction = dir.map((d) => getDir(d.toLowerCase()));
-            // console.log(direction)
-
-            // Loop through colorEnum
-            for (let color in colorEnum) {
-                // Get the ghost
-                let ghost = getGhost(color);
-                // Move the ghost
-                moveObj.setNextMove(ghost, ...direction[colorEnum[color]]);
-                // console.log(...direction[colorEnum[color]])
-            }
-
-        
-        }}
+        return {ghost: 'all', func: moveGivenColor(dir)};
     });
 
     c4c.Interpreter.define('getRandomDirection', () => {
        
-        // Get 4 random directions and return as a string representation of an array
-        let directions = [];
-        for (let i = 0; i < 4; i++) {
-            directions.push(DIRECTIONS[Math.floor(Math.random() * 4)]);
-        }
-        return directions.join(',');
+        return DIRECTIONS[Math.floor(Math.random() * 4)];
     });
 
     c4c.Interpreter.define('getDirectionToPacman', () => {
        
-        // Get 4 random directions and return as a string representation of an array
-        let directions = [];
-        for (let color in colorEnum) {
-            directions.push(direction(color));
-        }
-        return directions.join(',');
+        return direction(color);
     });
 
     c4c.Interpreter.define("rotate", () => {
@@ -167,32 +109,32 @@ export const initializeEditor = (c4c) => {
     
     // =====
 
-    c4c.Interpreter.define("randomDirection", () => {
-        return {ghost: 'all', func: () => {
-            var ranNum1 = Math.floor(Math.random() * 4);
-            var ranNum2 = Math.floor(Math.random() * 4);
-            var ranNum3 = Math.floor(Math.random() * 4);
-            var ranNum4 = Math.floor(Math.random() * 4);
+    // c4c.Interpreter.define("randomDirection", () => {
+    //     return {ghost: 'all', func: () => {
+    //         var ranNum1 = Math.floor(Math.random() * 4);
+    //         var ranNum2 = Math.floor(Math.random() * 4);
+    //         var ranNum3 = Math.floor(Math.random() * 4);
+    //         var ranNum4 = Math.floor(Math.random() * 4);
 
-            let dir1 = dirEnum[ranNum1];
-            let dir2 = dirEnum[ranNum2];
-            let dir3 = dirEnum[ranNum3];
-            let dir4 = dirEnum[ranNum4];
-            //they all generate the same number, fix that
+    //         let dir1 = dirEnum[ranNum1];
+    //         let dir2 = dirEnum[ranNum2];
+    //         let dir3 = dirEnum[ranNum3];
+    //         let dir4 = dirEnum[ranNum4];
+    //         //they all generate the same number, fix that
 
-            let dir = [dir1, dir2, dir3, dir4];
-            console.log(dir)
+    //         let dir = [dir1, dir2, dir3, dir4];
+    //         console.log(dir)
 
-            let direction = dir.map((d) => getDir(d))
-            // console.log(direction, "my function")
+    //         let direction = dir.map((d) => getDir(d))
+    //         // console.log(direction, "my function")
 
-            for (let color in colorEnum) {
-                let ghost = getGhost(color);
-                moveObj.setNextMove(ghost, ...direction[colorEnum[color]])
-            }
+    //         for (let color in colorEnum) {
+    //             let ghost = getGhost(color);
+    //             moveObj.setNextMove(ghost, ...direction[colorEnum[color]])
+    //         }
             
-        }}
-    })
+    //     }}
+    // })
 
     // =====
 
@@ -201,6 +143,18 @@ export const initializeEditor = (c4c) => {
 
 
 
+
+function moveGivenColor(dir) {
+    return (color) => {
+        // Color unused because we already know it
+        let litem = color.toLowerCase();
+
+        let direction = getDir(dir.toLowerCase());
+        //console.log(direction[0])
+
+        moveObj.setNextMove(getGhost(litem), ...direction);
+    }
+}
 
 // ==== OLD INTERP FUNCTIONS, ADD THE ONES WE WANT
 function isMoving(ghost)

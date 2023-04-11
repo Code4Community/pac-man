@@ -26,7 +26,7 @@ const User = mongoose.model('User', {
 // +++++++++++++++ . +++++++++++++++ . +++++++++++++++ . +++++++++++++++ //
 
 function createConnection() {
-   mongoose.connect('mongodb+srv://c4c-pac-man:VUoMnRKE9XhU7xFv@cluster0.azeuqn4.mongodb.net/pac-man', {
+   mongoose.connect('mongodb+srv://c4c-pac-man:zPIONsLyDmJ7VBmU@cluster0.azeuqn4.mongodb.net/pac-man', {
          useNewUrlParser: true
       })
       .then(() => {
@@ -34,7 +34,7 @@ function createConnection() {
       })
       .catch((err) => {
          console.log(`[!] There is not a problem.\nError: ${err}`);
-         process.exit(-1)
+         // process.exit(-1)
       })
 
    return '[*] Express attached to database. '
