@@ -1,0 +1,27 @@
+html {
+	min-width: 450px;
+	overflow-x: hidden;
+}
+
+a{
+	text-decoration: none;
+}
+
+.xcontainer {
+	display: flex;
+	margin-top: 56px !important;
+	flex-wrap: wrap;
+	justify-content: space-evenly;
+	align-items: center;
+	margin-top: 30px;
+	min-width: 70%;
+	min-height: 80%;
+}
+
+.code-container {
+	display: flex;
+}
+
+.code-container>div {
+	padding: 20px;
+}
