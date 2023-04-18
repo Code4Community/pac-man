@@ -9,11 +9,6 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-import pkg from 'shelljs';
-const { exec } = pkg;
-
-exec('cd scripts; npm run build:dev; rm -r ../app/directory/assets/dist; cp -r dist ../app/directory/assets/dist; cp index.html ../app/directory/static/pacman.html; rm -r dist');
-
 const User = mongoose.model('User', {
    name: {
       type: String
