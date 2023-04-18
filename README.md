@@ -1,27 +1,34 @@
 # Pac Man
+This is a Pac-Man clone made using Phaser and editor using c4c-lib.
 
-This is a Pac-Man clone made using [Phaser](https://phaser.io/).
-
-## Overview
+# Overview
 Students will write code to control the ghosts. They will learn the difference between static and dynamic character behavior. Then they will implement static behavior using hard coding and dynamic behavior using parameterization. Students will learn about function calls, variables, and if statements.
 
-## Getting started
-1. Clone this repository
-2. Install [Node.js and npm](https://nodejs.org/en/download/)
-3. Install dependencies: `npm i`
-4. Run the application: `node app.js`
-5. Open the URL given by Node in your browser (e.g., http://localhost:8080)
 
-## Deployment
-> `https://github.com/Code4Community/pac-man`
+## Tutorials 
 
-## Contribution Policy
-This project is closed to outside contributions while it is in active development.
+ - [Node Tutorial](https://www.youtube.com/watch?v=TlB_eWDSMt4&t=4s&pp=ygUNbm9kZSB0dXRvcmlhbA%3D%3D)  / [Express Tutorial](https://www.youtube.com/watch?v=SccSCuHhOw0&pp=ygUPZXhwcmVzIHR1dG9yaWFs)
+ - [Phaser Tutorial](hhttps://www.youtube.com/watch?v=hI_LS8bdkM4&t=2127s&pp=ygUPcGhhc2VyIHR1dG9yaWFs)
+ - [MongoDB Tutorial](https://www.youtube.com/watch?v=ofme2o29ngU&pp=ygUQbW9uZ29kYiB0dXRvcmlhbA%3D%3D)
 
-## What we are working on
-1. Find a way to unite the node modules
-2. Same with everything else, have one readme, one everything else
-3. Add more interpreter functions
-4. Maybe get multiplayer integration
-5. Allow students to code their own directionToPacMan function???
-6. Not moving function
+ - [Setup Tutorial](hhttps://upload.wikimedia.org/wikipedia/commons/2/21/OpenGL_Tutorial_TODO.png)
+ 
+## Roadmap
+
+- Additional browser support
+
+- Add more integrations / interpreter code
+
+- Clean mongoDB code / awaits and fix callbacks
+
+
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
+
+
+## Screenshots
+
+![App Screenshot](https://i.imgur.com/zb1lALy.png)
+

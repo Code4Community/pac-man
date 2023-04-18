@@ -1,15 +1,18 @@
-const http = require('http');
-const mongoose = require('mongoose');
-const express = require('express');
-const path = require('path')
-const crypto = require("crypto");
-const Os = require('os');
+import http from 'http';
+import mongoose  from 'mongoose';
+import express from 'express';
+import path from 'path'
+import crypto from "crypto";
 
-const { exec } = require('shelljs');
-if (Os.platform().includes('win')) 
-   exec('powershell "cd scripts; npm run build:dev; rm -r ../assets/dist; cp -r dist ../assets/dist; cp index.html ../static/pacman.html; rm -r dist"');
-else
-   exec('cd scripts; npm run build:dev; rm -r ../assets/dist; cp -r dist ../assets/dist; cp index.html ../static/pacman.html; rm -r dist');
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+import pkg from 'shelljs';
+const { exec } = pkg;
+
+exec('cd scripts; npm run build:dev; rm -r ../app/directory/assets/dist; cp -r dist ../app/directory/assets/dist; cp index.html ../app/directory/static/pacman.html; rm -r dist');
 
 const User = mongoose.model('User', {
    name: {
@@ -23,6 +26,18 @@ const User = mongoose.model('User', {
    }
 });
 
+const app = express();
+var db = createConnection();
+
+
+app.use('/img', express.static(path.join(__dirname, '/app/directory/assets/img')));
+app.use('/js', express.static(path.join(__dirname, '/app/directory/assets/js')));
+app.use('/dist', express.static(path.join(__dirname, '/app/directory/assets/dist')));
+app.use('/css', express.static(path.join(__dirname, '/app/directory/assets/css')));
+
+app.use(express.json())
+console.log(db);
+
 // +++++++++++++++ . +++++++++++++++ . +++++++++++++++ . +++++++++++++++ //
 
 function createConnection() {
@@ -34,7 +49,7 @@ function createConnection() {
       })
       .catch((err) => {
          console.log(`[!] There is not a problem.\nError: ${err}`);
-         // process.exit(-1)
+         process.exit(-1)
       })
 
    return '[*] Express attached to database. '
@@ -63,53 +78,61 @@ function createCollection() {
 }
 
 // +++++++++++++++ . +++++++++++++++ . +++++++++++++++ . +++++++++++++++ //
-
-function createUser(username, pass) {
-
-   User.findOne({
+async function checkUser(username) {
+   return await User.findOne({
       name: username
    }, function(err, docs) {
       if (err) {
          console.log(err);
+         return false;
       } else {
-         if (docs == null) {
-            console.log("[-] Creating User...");
-
-            const person = new Promise((resolve, reject) => {
-               var code = `Welcome to C4C PacMan\n     [ ${username} ].\nHit the instruction\n   button on your\nleft to learn more!`
-               var user = new User({
-                  name: username,
-                  pass: pass,
-                  code: code
-               });
-
-               user.save(function(err, user) {
-                  if (err) {
-                     reject("[-] Reject...");
-                     return console.error(err)
-                  }
-                  console.log("[*] User: " + user.name + " saved to user collection.\n[-] Document ID: " + user.id);
-
-                  resolve(user.id);
-
-               });
-            });
-
-            person.then(
-               (value) => {
-                  //console.log(value); // [-] Success!
-               },
-               (reason) => {
-                  //console.error(reason); // [-] Error!
-               },
-            );
-         } else {
-            console.log('[-] User already exists... ');
-            return '[*] User already exists...';
-         }
-
+         return docs == null;
       }
-   });
+   })
+}
+
+
+async function createUser(username, pass) {
+   let check = await checkUser(username);
+   let checks = [];
+   for (let i = 0; i < 5; i++) checks[i] = checkUser(username);
+   await Promise.all(checks)
+   if (check) {
+      console.log("[-] Creating User...");
+
+      const person = new Promise((resolve, reject) => {
+         var code = `Welcome to C4C PacMan\n     [ ${username} ].\nHit the instruction\n   button on your\nleft to learn more!`
+         var user = new User({
+            name: username,
+            pass: pass,
+            code: code
+         });
+
+         user.save(function(err, user) {
+            if (err) {
+               reject("[-] Reject...");
+               return console.error(err)
+            }
+            console.log("[*] User: " + user.name + " saved to user collection.\n[-] Document ID: " + user.id);
+
+            resolve(user.id);
+
+         });
+      });
+
+      person.then(
+         (value) => {
+            //console.log(value); // [-] Success!
+         },
+         (reason) => {
+            //console.error(reason); // [-] Error!
+         },
+      );
+   } else {
+      console.log('[-] User already exists... ');
+      return '[*] User already exists...';
+   }
+
 
    return '[*] Complete...';
 
@@ -189,42 +212,31 @@ function deleteUser(username) {
 
 }
 
-const app = express();
-var db = createConnection();
-
-app.use('/img', express.static(path.join(__dirname, '/assets/img')));
-app.use('/js', express.static(path.join(__dirname, '/assets/js')));
-app.use('/dist', express.static(path.join(__dirname, '/assets/dist')));
-app.use('/css', express.static(path.join(__dirname, '/assets/css')));
-
-app.use(express.json())
-console.log(db);
-
 // ==================== . [ GET PAGES] . ==================== //
 
 
 app.get('/', (req, res) => {
-   res.sendFile(__dirname + '/static/index.html');
+   res.sendFile(__dirname + '/app/directory/static/index.html');
 });
 
 app.get('/logout', (req, res) => {
-   res.sendFile(__dirname + '/static/logout.html');
+   res.sendFile(__dirname + '/app/directory/static/logout.html');
 });
 
 app.get('/pacman', (req, res) => {
-   res.sendFile(__dirname + '/static/pacman.html');
+   res.sendFile(__dirname + '/app/directory/static/pacman.html');
 });
 
 app.get('/account', (req, res) => {
-   res.sendFile(__dirname + '/static/account.html');
+   res.sendFile(__dirname + '/app/directory/static/account.html');
 });
 
 app.get('/login', (req, res) => {
-   res.sendFile(__dirname + '/static/login.html');
+   res.sendFile(__dirname + '/app/directory/static/login.html');
 });
 
 app.get('/register', (req, res) => {
-   res.sendFile(__dirname + '/static/register.html');
+   res.sendFile(__dirname + '/app/directory/static/register.html');
 });
 
 app.get('/users', function(req, res) {
@@ -238,6 +250,7 @@ app.get('/users', function(req, res) {
       res.send(userMap);  
     });
   });
+
 
 // ==================== . [ POST ENDPS] . ==================== //
 
@@ -623,7 +636,7 @@ app.post('/register', (req, res) => {
 // ==================== . [ 404 Page] . ==================== //
 
 app.get('*', function(req, res) {
-   res.status(404).sendFile(__dirname + '/static/404.html');
+   res.status(404).sendFile(__dirname + '/app/directory/static/404.html');
 });
 
 
