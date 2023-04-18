@@ -1,7 +1,28 @@
 const DIRECTIONS = ['up', 'right', 'down', 'left'];
 
+
 // import C4C from 'c4c-lib';
 import moveObj from './moveFunc.js'
+
+/**
+ * Enumeration of the ghost colors for easy access.
+ * 
+ * @readonly
+ * 
+ */
+export const colorEnum = {
+    'yellow': 0,
+    'pink': 1,
+    'blue': 2,
+    'red': 3
+}
+
+export const dirEnum = {
+    0: 'up',
+    1: 'right',
+    2: 'down',
+    3: 'left'
+}
 
 
 const theme = {
@@ -43,29 +64,29 @@ const codeEditor = document.getElementById('code-editor');
 
 }
 
-export const initializeEditor = (c4c) => {
+export const initializeEditor = (c4c, runners) => {
     
-    c4c.Interpreter.define('move', (item , dir) => {
-        return {ghost: item.toLowerCase(), func: () => {
+    
 
-            let litem = item.toLowerCase()
-            let ldir = dir.toLowerCase()
-            
-            let direction = getDir(ldir)
-            //console.log(direction[0])
-
-            if(litem == 'all'){
-            ghosts.children.iterate((litem) => {
-                moveObj.setNextMove(litem, direction[0], direction[1]);
-            })
-            }else{
-                moveObj.setNextMove(getGhost(litem), direction[0], direction[1]);
-            }
-        
-        }}
+    c4c.Interpreter.define('moveOne', (item , dir) => {
+        return {ghost: item.toLowerCase(), func: moveGivenColor(dir)};
     });
 
+    c4c.Interpreter.define('move', (dir) => {
+        return {ghost: 'all', func: moveGivenColor(dir)};
+    });
 
+    c4c.Interpreter.define('getRandomDirection', () => {
+       
+        return DIRECTIONS[Math.floor(Math.random() * 4)];
+    });
+
+    // Define getDirectionToPacMan differently for each runner
+    for (const runner in runners) {
+        c4c.Interpreter.defineInNamespace(runners[runner].namespace, 'getDirectionToPacMan', () => {
+            return direction(runner);
+        });
+    }
 
     c4c.Interpreter.define("rotate", () => {
         
@@ -88,11 +109,54 @@ export const initializeEditor = (c4c) => {
         return false;
     });
     
+    // =====
+
+    // c4c.Interpreter.define("randomDirection", () => {
+    //     return {ghost: 'all', func: () => {
+    //         var ranNum1 = Math.floor(Math.random() * 4);
+    //         var ranNum2 = Math.floor(Math.random() * 4);
+    //         var ranNum3 = Math.floor(Math.random() * 4);
+    //         var ranNum4 = Math.floor(Math.random() * 4);
+
+    //         let dir1 = dirEnum[ranNum1];
+    //         let dir2 = dirEnum[ranNum2];
+    //         let dir3 = dirEnum[ranNum3];
+    //         let dir4 = dirEnum[ranNum4];
+    //         //they all generate the same number, fix that
+
+    //         let dir = [dir1, dir2, dir3, dir4];
+    //         console.log(dir)
+
+    //         let direction = dir.map((d) => getDir(d))
+    //         // console.log(direction, "my function")
+
+    //         for (let color in colorEnum) {
+    //             let ghost = getGhost(color);
+    //             moveObj.setNextMove(ghost, ...direction[colorEnum[color]])
+    //         }
+            
+    //     }}
+    // })
+
+    // =====
+
+
 }
-// =====
 
 
 
+
+function moveGivenColor(dir) {
+    return (color) => {
+        // Color unused because we already know it
+        let litem = color.toLowerCase();
+
+        let direction = getDir(dir.toLowerCase());
+        //console.log(direction[0])
+
+        moveObj.setNextMove(getGhost(litem), ...direction);
+    }
+}
 
 // ==== OLD INTERP FUNCTIONS, ADD THE ONES WE WANT
 function isMoving(ghost)
@@ -207,4 +271,10 @@ function getDir(ldir) {
         let ldir = -1
         return [cords , ldir]
     }
+}
+
+
+// Scan code to see if works
+function scanCode(code) {
+    return works
 }

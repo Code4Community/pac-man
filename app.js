@@ -3,10 +3,13 @@ const mongoose = require('mongoose');
 const express = require('express');
 const path = require('path')
 const crypto = require("crypto");
+const Os = require('os');
 
 const { exec } = require('shelljs');
-
-exec('cd scripts; npm run build:dev; rm -r ../assets/dist; cp -r dist ../assets/dist; cp index.html ../static/pacman.html; rm -r dist');
+if (Os.platform().includes('win')) 
+   exec('powershell "cd scripts; npm run build:dev; rm -r ../assets/dist; cp -r dist ../assets/dist; cp index.html ../static/pacman.html; rm -r dist"');
+else
+   exec('cd scripts; npm run build:dev; rm -r ../assets/dist; cp -r dist ../assets/dist; cp index.html ../static/pacman.html; rm -r dist');
 
 const User = mongoose.model('User', {
    name: {
@@ -23,7 +26,7 @@ const User = mongoose.model('User', {
 // +++++++++++++++ . +++++++++++++++ . +++++++++++++++ . +++++++++++++++ //
 
 function createConnection() {
-   mongoose.connect('mongodb+srv://c4c-pac-man:VUoMnRKE9XhU7xFv@cluster0.azeuqn4.mongodb.net/pac-man', {
+   mongoose.connect('mongodb+srv://c4c-pac-man:zPIONsLyDmJ7VBmU@cluster0.azeuqn4.mongodb.net/pac-man', {
          useNewUrlParser: true
       })
       .then(() => {
@@ -31,7 +34,7 @@ function createConnection() {
       })
       .catch((err) => {
          console.log(`[!] There is not a problem.\nError: ${err}`);
-         process.exit(-1)
+         // process.exit(-1)
       })
 
    return '[*] Express attached to database. '

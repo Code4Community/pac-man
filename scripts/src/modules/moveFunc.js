@@ -55,11 +55,11 @@ function moveDown(sprite) {
 }
 
 module.exports = {
-    setNextMove: setNextMove,
-    processNextMove: processNextMove,
-    move: move,
-    moveRight: moveRight,
-    moveLeft: moveLeft,
-    moveDown: moveDown,
-    moveUp: moveUp,
+    setNextMove,
+    processNextMove,
+    move,
+    moveRight,
+    moveLeft,
+    moveDown,
+    moveUp,
 };

@@ -305,7 +305,7 @@ function loadcode(username) {
             loading.forEach((item)=> {
                 var tableRow = document.querySelector('.cm-line');
                 var tableRowClone = tableRow.cloneNode(true);
-                tableRowClone.innerText = item;
+                tableRowClone.innerText = item.trim();
                 tableRow.parentNode.insertBefore(tableRowClone, tableRow.nextSibling);
             });
         }
@@ -324,7 +324,7 @@ function saveCode() {
         body: JSON.stringify({
             username: localStorage.username,
             userauth: localStorage.userauth,
-            code: code,
+            code: code.trim(),
             newpass: null
         }),
      })

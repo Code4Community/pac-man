@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import C4C from 'c4c-lib';
-import {createEditor, createEventListeners, initializeEditor} from './modules/interpFunc.js'
+import {createEditor, createEventListeners, initializeEditor, colorEnum} from './modules/interpFunc.js'
 
 import platform from './assets/platform.png'
 import dot from './assets/dot.png'
@@ -76,8 +76,10 @@ var tileset;
 var worldLayer;
 var munch;
 
-// Location of ghost code step
-var location = [];
+
+// Runners for C4C-lib
+var runners = {};
+GHOSTS.forEach(color => {runners[color] = C4C.Runner.createRunner(); runners[color].namespace.set('color', color)});
 
 // How often to run the ghost code
 var ghostLoopSpeed = 50;
@@ -104,19 +106,42 @@ function restartGame() {
     score = 0;
     gameOver = false;
     game = new Phaser.Game(config);
-    location = [0];
+    // Reset every runner
+    for (let x in runners) {
+        runners[x].reset();
+    }
     ghostLoopI = 0;
 };
 
 document.getElementById('start-over').addEventListener('click', restartGame);
 
 document.getElementById('submit').addEventListener('click', () => {
-    // Delete the old array
-    programText = C4C.Editor.getText();
+    // Get current text
+    let newText = C4C.Editor.getText();
+
+    // Save the old program text
+    let oldText = programText;
+
+    // Make sure there's no errors
+    runners['pink'].setProgram(newText);
+    // Check it in the namespace of some random runner
+    if (runners['pink'].check()) {
+        // If there is an error, set the program text back to the old text
+        runners['pink'].setProgram(oldText);
+        return;
+    };
+
+    // Replace programText with newText
+    programText = newText;
     ghostLoopSpeed = document.getElementById('loopSpeed').value;
     ghostLoopI = 0;
-    location = [];
-    
+
+    // Reset the runners
+    for (let x in runners) {
+        runners[x].setProgram(programText);
+        runners[x].reset();
+    }
+
     
 });
 
@@ -156,7 +181,7 @@ function preload() {
 }
 
 function create() {
-    initializeEditor(C4C);
+    initializeEditor(C4C, runners);
     createEventListeners(this);
     
     
@@ -283,45 +308,36 @@ function create() {
     }
 }
 
+
+// ----------------
+function runGhostCode(color) {
+    // Get the runner's current location
+    let origLoc = runners[color].location;
+    // console.log(origLoc);
+    let maxSteps = 100;
+
+    do  {
+        // Run one step of ghost AI
+        runners[color].step();
+        let result = runners[color].result;
+        // If a result is returned, probably run another step
+        if (result) {
+            // If the result is a ghost, set that ghost's bit to 1
+            let ghost = result.ghost || 'none';
+            if (ghost === 'all' || ghost === color){
+                if (result.func){
+                    result.func(color);
+                }
+                break;
+            }
+        }
+    } while (--maxSteps > 0 && JSON.stringify(runners[color].location) != JSON.stringify(origLoc));
+}
+// ----------------
+
 function update() {
     if (ghostLoopI == 0) {
-        let origLoc = [...location];
-        // Which ghosts have moved so far, bitboard
-        // If the first bit is set, the first ghost has moved
-        // If the second bit is set, the second ghost has moved ...
-        let moved = 0b0000;
-        do  {
-            
-            // Run one step of ghost AI
-            let [result, loc] = C4C.Interpreter.stepRun(programText, location);
-            
-            
-            
-            // If at end of program, reset location
-            if (location[0] == 1) location = [];
-
-            // If a result is returned, probably run another step
-            if (result) {
-                let newMoved = 0b0000;
-                
-                // If the result is a ghost, set that ghost's bit to 1
-                let ghost = result.ghost;
-                if (ghost == 'pink') newMoved = 0b0001;
-                else if (ghost == 'red') newMoved = 0b0010;
-                else if (ghost == 'blue') newMoved = 0b0100;
-                else if (ghost == 'orange') newMoved = 0b1000;
-                else if (ghost == 'all') newMoved = 0b1111;
-
-
-                // If the ghost has already moved, stop running
-                if (moved & newMoved) break;
-
-                // Otherwise, go to the new location and set the ghost's bit to 1, and run
-                moved |= newMoved;
-                location = loc;
-                result.func();
-           }
-        } while (JSON.stringify(location) != JSON.stringify(origLoc));
+        GHOSTS.forEach(ghost => runGhostCode(ghost));
     }
     ghostLoopI++;
     if (ghostLoopI >= ghostLoopSpeed) {

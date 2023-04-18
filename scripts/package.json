@@ -45,7 +45,7 @@
     },
     "dependencies": {
         "aws-sdk": "^2.1254.0",
-        "c4c-lib": "github:code4community/c4c-lib#0.1.0",
+        "c4c-lib": "github:code4community/c4c-lib",
         "child_process": "^1.0.2",
         "phaser": "^3.55.2"
     }
