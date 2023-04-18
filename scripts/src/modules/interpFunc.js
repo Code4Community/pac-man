@@ -64,7 +64,7 @@ const codeEditor = document.getElementById('code-editor');
 
 }
 
-export const initializeEditor = (c4c) => {
+export const initializeEditor = (c4c, runners) => {
     
     
 
@@ -81,10 +81,12 @@ export const initializeEditor = (c4c) => {
         return DIRECTIONS[Math.floor(Math.random() * 4)];
     });
 
-    c4c.Interpreter.define('getDirectionToPacman', () => {
-       
-        return direction(color);
-    });
+    // Define getDirectionToPacMan differently for each runner
+    for (const runner in runners) {
+        c4c.Interpreter.defineInNamespace(runners[runner].namespace, 'getDirectionToPacMan', () => {
+            return direction(runner);
+        });
+    }
 
     c4c.Interpreter.define("rotate", () => {
         

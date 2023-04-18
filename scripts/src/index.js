@@ -119,13 +119,17 @@ document.getElementById('submit').addEventListener('click', () => {
     // Get current text
     let newText = C4C.Editor.getText();
 
+    // Save the old program text
+    let oldText = programText;
+
     // Make sure there's no errors
-    C4C.Interpreter.check(newText, (err, result) => {
-        if (err) {
-            console.log(err);
-            return;
-        }
-    });
+    runners['pink'].setProgram(newText);
+    // Check it in the namespace of some random runner
+    if (runners['pink'].check()) {
+        // If there is an error, set the program text back to the old text
+        runners['pink'].setProgram(oldText);
+        return;
+    };
 
     // Replace programText with newText
     programText = newText;
@@ -177,7 +181,7 @@ function preload() {
 }
 
 function create() {
-    initializeEditor(C4C);
+    initializeEditor(C4C, runners);
     createEventListeners(this);
     
     
@@ -309,7 +313,7 @@ function create() {
 function runGhostCode(color) {
     // Get the runner's current location
     let origLoc = runners[color].location;
-    console.log(origLoc);
+    // console.log(origLoc);
     let maxSteps = 100;
 
     do  {
@@ -327,8 +331,7 @@ function runGhostCode(color) {
                 break;
             }
         }
-        maxSteps--;
-    } while (maxSteps > 0 && JSON.stringify(runners[color].location) != JSON.stringify(origLoc));
+    } while (--maxSteps > 0 && JSON.stringify(runners[color].location) != JSON.stringify(origLoc));
 }
 // ----------------
 
