@@ -45,7 +45,6 @@
     "webpack-dev-server": "^4.7.4",
     "webpack-merge": "^5.8.0"
   },
-  "type": "module",
   "dependencies": {
     "c4c-lib": "github:code4community/c4c-lib#0.1.0",
     "crypto": "^1.0.1",
