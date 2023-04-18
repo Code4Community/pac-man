@@ -9,10 +9,6 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-import pkg from 'shelljs';
-const { exec } = pkg;
-
-exec('cd scripts; npm run build:dev; rm -r ../app/directory/assets/dist; cp -r dist ../app/directory/assets/dist; cp index.html ../app/directory/static/pacman.html; rm -r dist');
 
 const User = mongoose.model('User', {
    name: {
@@ -90,7 +86,6 @@ async function checkUser(username) {
       }
    })
 }
-
 
 async function createUser(username, pass) {
    let check = await checkUser(username);
@@ -643,7 +638,7 @@ app.get('*', function(req, res) {
 // ===============[ V ]=============== //
 
 
-app.listen(8080,'0.0.0.0', () => {
+app.listen(8080,'127.0.0.1', () => {
    console.clear()
    console.log(`
     ▐▓█▀▀▀▀▀▀▀▀▀█▓▌░▄▄▄▄▄░
@@ -655,3 +650,4 @@ app.listen(8080,'0.0.0.0', () => {
   `)
    console.log('[*] Express server active on port:  [ 8080 ]');
 });
+
