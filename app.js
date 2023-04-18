@@ -9,7 +9,6 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-
 const User = mongoose.model('User', {
    name: {
       type: String
@@ -86,6 +85,7 @@ async function checkUser(username) {
       }
    })
 }
+
 
 async function createUser(username, pass) {
    let check = await checkUser(username);
@@ -638,7 +638,7 @@ app.get('*', function(req, res) {
 // ===============[ V ]=============== //
 
 
-app.listen(8080,'127.0.0.1', () => {
+app.listen(8080,'0.0.0.0', () => {
    console.clear()
    console.log(`
     ▐▓█▀▀▀▀▀▀▀▀▀█▓▌░▄▄▄▄▄░
@@ -650,4 +650,3 @@ app.listen(8080,'127.0.0.1', () => {
   `)
    console.log('[*] Express server active on port:  [ 8080 ]');
 });
-

@@ -10,7 +10,7 @@
     "serve": "webpack serve",
     "predeploy": "npm run build:prod",
     "deploy": "gh-pages -d dist",
-    "start": "cd app; npm run build:dev; rm -r ../app/directory/assets/dist; cp -r dist ../app/directory/assets/dist; cp pacman.html ../app/directory/static/pacman.html; rm -r dist; cd ..; node app.js"
+     "start": "cd app; npm run build:dev; rm -r ../app/directory/assets/dist; cp -r dist ../app/directory/assets/dist; cp pacman.html ../app/directory/static/pacman.html; rm -r dist; cd ..; node app.js"
   },
   "repository": {
     "type": "git",
