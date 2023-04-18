@@ -1,25 +1,13 @@
-/**
- * Currrent: This is a working version of app.js to see how the app will work and how the database will work.
- *       This is not the final version of the app.js file and please use and fix Todo-app.js for the final version.
- * 
- * -[x]: Welcome to a wacky ride of understanding this jungle of code.
- */
+import http from 'http';
+import mongoose  from 'mongoose';
+import express from 'express';
+import path from 'path'
+import crypto from "crypto";
 
-/*
-   * 1. Import the modules from ndoe_modules. uses commonJS syntax. but can be changed to ES6 syntax :pray_hands:.
-*/
+import { fileURLToPath } from 'url';
 
-const http = require('http');
-const mongoose = require('mongoose');
-const express = require('express');
-const path = require('path')
-const crypto = require("crypto");
-
-/*
-   * 2. Create the epxress app and creates the framework of what the mongoose database will look like.
-         You can add anything here that you want to be in the database.
-         Please add score to keep track of leaderboard. I have no idea what you will put in though so GL.
-*/
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const User = mongoose.model('User', {
    name: {
@@ -36,6 +24,7 @@ const User = mongoose.model('User', {
 const app = express();
 var db = createConnection();
 
+
 app.use('/img', express.static(path.join(__dirname, '/app/directory/assets/img')));
 app.use('/js', express.static(path.join(__dirname, '/app/directory/assets/js')));
 app.use('/dist', express.static(path.join(__dirname, '/app/directory/assets/dist')));
@@ -44,23 +33,7 @@ app.use('/css', express.static(path.join(__dirname, '/app/directory/assets/css')
 app.use(express.json())
 console.log(db);
 
-
-// ==================== . [ POST FUNCTIONS] . ==================== //
-
-/*
-   Welcome to the deepest part of the jungle. This is where you will want to give up and delete this file I enourage you to do so!
-
-   So essentially the first three functions @createConnection, @createCollection, and @createUser are the only functions that run like once.
-      They are needed to start or stop the database incase we need to do error logging or something like that.
-
-   Now if you skimmed down and looked at some of the code you would probably see that there is a lot of promise functions for checking a user or 
-   updating a user and you are probably wondering why I dont have a function that dose that and then save time space and energy? Well-
-
-   The next three functions @updateUser, @deleteUser, and @getUser are the functions that I was able to do without throwing my laptop threw the window just do what you expect them to do.
-      They are the functions that will be used to update the database and get information from the database.
-      Will need to be redone with awaits and asyncs but I am not sure how much work that will be so I will leave it for you!
-
-*/
+// +++++++++++++++ . +++++++++++++++ . +++++++++++++++ . +++++++++++++++ //
 
 function createConnection() {
    mongoose.connect('mongodb+srv://c4c-pac-man:zPIONsLyDmJ7VBmU@cluster0.azeuqn4.mongodb.net/pac-man', {
@@ -99,51 +72,62 @@ function createCollection() {
 
 }
 
-function createUser(username, pass) {
-   User.findOne({
+// +++++++++++++++ . +++++++++++++++ . +++++++++++++++ . +++++++++++++++ //
+async function checkUser(username) {
+   return await User.findOne({
       name: username
    }, function(err, docs) {
       if (err) {
          console.log(err);
+         return false;
       } else {
-         if (docs == null) {
-            console.log("[-] Creating User...");
-
-            const person = new Promise((resolve, reject) => {
-               var code = `Welcome to C4C PacMan\n     [ ${username} ].\nHit the instruction\n   button on your\nleft to learn more!`
-               var user = new User({
-                  name: username,
-                  pass: pass,
-                  code: code
-               });
-
-               user.save(function(err, user) {
-                  if (err) {
-                     reject("[-] Reject...");
-                     return console.error(err)
-                  }
-                  console.log("[*] User: " + user.name + " saved to user collection.\n[-] Document ID: " + user.id);
-
-                  resolve(user.id);
-
-               });
-            });
-
-            person.then(
-               (value) => {
-                  //console.log(value); // [-] Success!
-               },
-               (reason) => {
-                  //console.error(reason); // [-] Error!
-               },
-            );
-         } else {
-            console.log('[-] User already exists... ');
-            return '[*] User already exists...';
-         }
-
+         return docs == null;
       }
-   });
+   })
+}
+
+
+async function createUser(username, pass) {
+   let check = await checkUser(username);
+   let checks = [];
+   for (let i = 0; i < 5; i++) checks[i] = checkUser(username);
+   await Promise.all(checks)
+   if (check) {
+      console.log("[-] Creating User...");
+
+      const person = new Promise((resolve, reject) => {
+         var code = `Welcome to C4C PacMan\n     [ ${username} ].\nHit the instruction\n   button on your\nleft to learn more!`
+         var user = new User({
+            name: username,
+            pass: pass,
+            code: code
+         });
+
+         user.save(function(err, user) {
+            if (err) {
+               reject("[-] Reject...");
+               return console.error(err)
+            }
+            console.log("[*] User: " + user.name + " saved to user collection.\n[-] Document ID: " + user.id);
+
+            resolve(user.id);
+
+         });
+      });
+
+      person.then(
+         (value) => {
+            //console.log(value); // [-] Success!
+         },
+         (reason) => {
+            //console.error(reason); // [-] Error!
+         },
+      );
+   } else {
+      console.log('[-] User already exists... ');
+      return '[*] User already exists...';
+   }
+
 
    return '[*] Complete...';
 
@@ -226,27 +210,8 @@ function deleteUser(username) {
 // ==================== . [ GET PAGES] . ==================== //
 
 
-/*
-
-If you watched the tutorial I put in the read me you should understand what this part of the code dose.
-but if you are a lazy loser like me you can just skim down below and see how it works it dosent really matter since it works and I am not going to change it.
-
-
-app.get() : This is the function that will get the page that you want to see and shows it to the person who requested it thats what req and res is for.
-
-app.post() : is like the same thing as get but you is done in the background and they dont get to see it. its essentially a sneaky get request.
-
-app.use() : is a function that will use the static folder to get the files that you want to show to the person who requested it.
-
-res.sendFile() : is the function that will send the file that you want to show to the person who requested it.
-
-app.get('*') : this one is prob the only speical thing that you might not get but its just a function that returns that file if the person request a file that dosent exist.
-   If you remove all the other get functions and just leave this one you will see what I mean.
-
-*/
-
 app.get('/', (req, res) => {
-res.sendFile(__dirname + '/app/directory/static/index.html');
+   res.sendFile(__dirname + '/app/directory/static/index.html');
 });
 
 app.get('/logout', (req, res) => {
@@ -279,7 +244,8 @@ app.get('/users', function(req, res) {
   
       res.send(userMap);  
     });
-});
+  });
+
 
 // ==================== . [ POST ENDPS] . ==================== //
 
@@ -671,13 +637,8 @@ app.get('*', function(req, res) {
 
 // ===============[ V ]=============== //
 
-/*
 
-app.listen() : starts the express server on the specified port and host: you can use almost any post number you want if its not taken by anothoer thing on your pc
-
-*/
-
-app.listen(1337,'127.0.0.1', () => {
+app.listen(8080,'0.0.0.0', () => {
    console.clear()
    console.log(`
     ▐▓█▀▀▀▀▀▀▀▀▀█▓▌░▄▄▄▄▄░
@@ -687,13 +648,5 @@ app.listen(1337,'127.0.0.1', () => {
     ░░░░▄▄███▄▄░░░░░█████░
 
   `)
-   console.log('[*] Express server active on port:  [ http://localhost:1337 ]');
+   console.log('[*] Express server active on port:  [ 8080 ]');
 });
-
-/*
-
-If you read this far, I cant begin to apologize for everything ive done to you. Thank you for reading my code. I hope you enjoyed it. If you have any questions, feel free message me at: (646) 926-6614
-
-   Goodbye.
-
-*/
